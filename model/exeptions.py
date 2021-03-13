@@ -1,0 +1,2 @@
+class WrongCourierData(Exception):
+    pass
