@@ -11,7 +11,7 @@ model = Model()
 @app.route('/couriers', methods=['POST'])
 def post_couriers():
     try:
-        if is_incorrect_request(request) or "data" not in request.get_json():
+        if is_incorrect_request() or "data" not in request.get_json():
             return make_response(View.send_couriers_bad_request([]), 400)
         try:
             ids = model.create_couriers(request.get_json()["data"])
@@ -25,7 +25,7 @@ def post_couriers():
 @app.route('/couriers/<int:courier_id>', methods=['PATCH'])
 def patch_courier(courier_id):
     try:
-        if is_incorrect_request(request):
+        if is_incorrect_request():
             return make_response(View.send_couriers_bad_request([courier_id]), 400)
         try:
             info = model.patch_courier(courier_id, request.get_json())
@@ -41,7 +41,7 @@ def patch_courier(courier_id):
 @app.route('/orders', methods=['POST'])
 def post_orders():
     try:
-        if is_incorrect_request(request) or "data" not in request.get_json():
+        if is_incorrect_request() or "data" not in request.get_json():
             return make_response(View.send_orders_bad_request([]), 400)
         try:
             ids = model.create_orders(request.get_json()["data"])
@@ -55,7 +55,7 @@ def post_orders():
 @app.route('/orders/assign', methods=['POST'])
 def post_orders_assign():
     try:
-        if is_incorrect_request(request) or "courier_id" not in request.get_json():
+        if is_incorrect_request() or "courier_id" not in request.get_json():
             return make_response(View.send_orders_bad_request([]), 400)
         try:
             order_ids, assign_time = model.assign_order(model.get_courier(courier_id=request.get_json()['courier_id']))
@@ -69,7 +69,7 @@ def post_orders_assign():
 @app.route('/orders/complete', methods=['POST'])
 def post_orders_complete():
     try:
-        if is_incorrect_request(request):
+        if is_incorrect_request():
             return make_response(View.send_orders_bad_request([]), 400)
         json = request.get_json()
         if ("courier_id" or "order_id" or "complete_time") not in json:
@@ -88,10 +88,10 @@ def post_orders_complete():
 @app.route('/couriers/<int:courier_id>', methods=['GET'])
 def get_courier(courier_id):
     try:
-        if is_incorrect_request(request):
+        if is_incorrect_request():
             return make_response(View.send_couriers_bad_request([courier_id]), 400)
         try:
-            courier = model.get_courier(courier_id)
+            courier = model.get_courier_full_data(courier_id)
             return make_response(View.send_courier_full_info(courier), 200)
         except WrongCourierData as e:
             return make_response(View.send_couriers_bad_request(e.args[0]), 400)
@@ -101,11 +101,10 @@ def get_courier(courier_id):
         return make_response(View.send_incorrect_json_bad_request(), 400)
 
 
-def is_incorrect_request(request):
+def is_incorrect_request():
     """
     The method checks the correctness of the entered data.
     Request should be json-type (Content-Type: application/json) and contains at least 1 field.
-    :param request: given request from client
     :return: True - if request is correct, otherwise - False
     """
     if request is None:

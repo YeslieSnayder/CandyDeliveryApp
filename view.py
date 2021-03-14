@@ -42,7 +42,7 @@ class View:
         :param courier: the object of type Courier with all information about him
         :return: JSON-object with full information about courier
         """
-        return jsonify(courier.get_data())
+        return jsonify(courier)
 
     @staticmethod
     def send_orders_created(order_ids):

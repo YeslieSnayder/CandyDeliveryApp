@@ -1,4 +1,6 @@
 from model.objects import *
+from datetime import datetime
+import numpy as np
 
 
 class Model:
@@ -42,6 +44,31 @@ class Model:
         if len(courier_list) == 0:
             raise DataNotFound([courier_id])
         return courier_list[0]
+
+    def get_courier_full_data(self, courier_id):
+        courier = self.get_courier(courier_id)
+        courier_dict = courier.__dict__()
+        courier_dict["earnings"] = 500 * courier.courier_type['coefficient'] * courier.delivery_count
+
+        flag = True
+        for k, v in enumerate(courier.orders_count):
+            if v != 0:
+                flag = False
+                break
+        if flag:
+            return courier_dict
+
+        complete_orders = list(filter(lambda i: i.courier_id == courier.courier_id
+                                                and i.type == Order.TypeOrder.COMPLETE,
+                                      self.orders))
+        td = np.zeros(len(complete_orders), dtype=int)
+        for i in complete_orders:
+            td[i.region] += i.lead_time
+        for k, v in enumerate(courier.orders_count):
+            if v != 0:
+                td[k] /= v
+        t = np.min(td[np.nonzero(td)])
+        courier_dict['rating'] = (60 * 60 - min(t, 60 * 60)) / (60 * 60) * 5
 
     def get_order(self, order_id):
         order_list = list(filter(lambda i: i.order_id == order_id, self.orders))
@@ -94,11 +121,18 @@ class Model:
         for o in orders:
             if o.courier_id == 0 and o.type == Order.TypeOrder.READY:
                 o.update({'courier_id': courier.courier_id, 'type': Order.TypeOrder.PROCESSING})
+        courier.prev_order_time = courier.assign_time
         return [o.order_id for o in orders], courier.assign_time
 
     def complete_order(self, json):
         order = self.get_order(json["order_id"])
-        order.complete(json)
+        courier = self.get_courier(json["courier_id"])
+        order.complete(json, courier.prev_order_time)
+        courier.prev_order_time = order.complete_time
+        if courier.orders_count[order.region] is None:
+            courier.orders_count[order.region] = 1
+        else:
+            courier.orders_count[order.region] += 1
 
 
 def can_deliver_on_time(delivery_time, working_hours):

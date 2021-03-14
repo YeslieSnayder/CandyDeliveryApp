@@ -1,6 +1,7 @@
-from model.exeptions import *
 import numpy as np
+
 from datetime import datetime
+from model.exeptions import *
 
 
 class Courier:
@@ -11,11 +12,10 @@ class Courier:
     regions ->       the list of regions' id in which the courier works: integer >= 1
     working_hours -> the list of working hours of the courier {HH:MM-HH:MM}
     Additional information:
-    td ->            the list of average delivery time in regions (element [i] => region number 'i')
-    orders_count ->  the list of number of complete orders in regions (element [i] => region number 'i')
-    orders_done ->   the list of complete orders in regions (element [i] => region number 'i')
+    orders_count ->  the map (region: number of complete orders in that region)
     assign_time ->   appointment time of the first orders: Date {YYYY-MM-DDThh:mm:ss[.SS]Z : 1985-04-12T23:20:50.52Z}
-    status ->        status of the courier: bool {true - in processing of delivery, false - chill}
+    delivery_count ->  number of orders delivered
+    prev_order_time -> the time spent on previous order: Date
     """
 
     class TypeCourier:
@@ -23,27 +23,22 @@ class Courier:
         BIKE = {'name': 'bike', 'payload': 15, 'coefficient': 5}
         CAR = {'name': 'car', 'payload': 50, 'coefficient': 9}
 
-    def __init__(self, json_obj, td=None, orders_count=None, orders_done=None, status=False):
+    def __init__(self, json_obj, orders_count=None, delivery_count=0):
         if not Courier.is_correct_object_data(json_obj):
             raise WrongCourierData([json_obj['courier_id']])
         self.courier_id = json_obj['courier_id']
         self.courier_type = json_obj['courier_type']
         self.regions = json_obj['regions']
         self.working_hours = json_obj['working_hours']
+        self.delivery_count = delivery_count
         self.assign_time = None
-        self.status = status
-        if td is None:
-            self.td = np.array([])
-        else:
-            self.td = td
+        self.prev_order_time = None
         if orders_count is None:
-            self.orders_count = np.array([])
+            self.orders_count = {}
+            for r in self.regions:
+                self.orders_count[r] = 0
         else:
             self.orders_count = orders_count
-        if orders_done is None:
-            self.orders_done = np.array([])
-        else:
-            self.orders_done = orders_done
 
     def __dict__(self):
         return {
@@ -61,8 +56,7 @@ class Courier:
                 or 'courier_type' not in json_obj \
                 and 'regions' not in json_obj \
                 and 'working_hours' not in json_obj \
-                and 'assign_time' not in json_obj \
-                and 'status' not in json_obj:
+                and 'assign_time' not in json_obj:
             raise WrongCourierData()
 
         if 'regions' in json_obj:
@@ -71,8 +65,6 @@ class Courier:
             self.working_hours = json_obj['working_hours']
         if 'assign_time' in json_obj:
             self.assign_time = json_obj['assign_time']
-        if 'status' in json_obj:
-            self.status = json_obj['status']
         if 'courier_type' in json_obj:
             if json_obj['courier_type'] == Courier.TypeCourier.FOOT['name'] \
                     or json_obj['courier_type'] == Courier.TypeCourier.BIKE['name'] \
@@ -80,11 +72,6 @@ class Courier:
                 self.courier_type = json_obj['courier_type']
             else:
                 raise WrongCourierData()
-
-    def get_data(self):
-        res = self.__dict__()
-        t = np.min(self.td)
-        res['rating'] = (60*60 - min(t, 60*60))/(60*60) * 5
 
     @staticmethod
     def is_correct_object_data(data):
@@ -111,6 +98,7 @@ class Order:
     Additional information:
     type ->            type of order process: TypeOrder {READY, PROCESSING, COMPLETE}
     complete_time ->   time when the order was completed: Date {YYYY-MM-DDThh:mm:ss[.SS]Z : 1985-04-12T23:20:50.52Z}
+    lead_time ->       time spent on that order: Date
     courier_id ->      identifier of courier who toke the order: integer >= 1, if 0 => no courier
     """
 
@@ -128,6 +116,7 @@ class Order:
         self.delivery_hours = obj['delivery_hours']
         self.type = Order.TypeOrder.READY
         self.complete_time = None
+        self.lead_time = None
         self.courier_id = 0
 
     def update(self, json_obj):
@@ -137,7 +126,8 @@ class Order:
                 and 'delivery_hours' not in json_obj \
                 and 'type' not in json_obj \
                 and 'complete_time' not in json_obj \
-                and 'courier_id' not in json_obj:
+                and 'courier_id' not in json_obj \
+                and 'lead_time' not in json_obj:
             raise WrongOrderData()
 
         if 'weight' in json_obj:
@@ -152,13 +142,17 @@ class Order:
             self.complete_time = json_obj['complete_time']
         if self.type != Order.TypeOrder.READY and 'courier_id' in json_obj:
             self.courier_id = json_obj['courier_id']
+        if self.type == Order.TypeOrder.COMPLETE and 'lead_time' in json_obj:
+            self.lead_time = json_obj['lead_time']
 
-    def complete(self, json):
+    def complete(self, json, prev_order_time):
         if json["courier_id"] != self.courier_id:
             raise WrongCourierData([json["courier_id"]])
         if self.type == Order.TypeOrder.READY:
             raise WrongOrderData([json['order_id']])
         if self.type == Order.TypeOrder.PROCESSING:
+            json['lead_time'] = (get_time_from_str(json['complete_time']) - get_time_from_str(prev_order_time))\
+                                    .total_seconds()
             self.update(json)
 
     @staticmethod
@@ -173,3 +167,7 @@ class Order:
                 or data['weight'] < 0.01 or data['weight'] > 50:
             return False
         return True
+
+
+def get_time_from_str(str_time):
+    return datetime.fromisoformat(str_time[:-1] + '0000')
