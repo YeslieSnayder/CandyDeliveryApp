@@ -76,24 +76,21 @@ class DB:
         """
         self.orders = order_list
 
-    def get_orders_for_assign(self, courier_id, courier_payload,
-                              courier_regions, courier_working_hours):
+    def get_orders_for_assign(self, courier_payload, courier_regions, courier_working_hours):
         """
         The method returns a list of orders that are satisfied by conditions for assigning.
         It checks the region of order, the weight, delivery time,
-        and with deciding knapsack problem it returns the list of the most benefit orders.
-        :param courier_id: id of a courier that took the order from previous time.
+        and returns the list of the orders.
         :param courier_payload: the maximum payload of the courier.
         :param courier_regions: the regions where courier is working.
         :param courier_working_hours: the working hours of the courier.
-        :return: the list with the most benefit orders for a courier.
+        :return: the list with the orders for a courier.
         """
-        return list(filter(lambda order: order.region in courier_regions and
-                                         order.weight <= courier_payload and
-                                         can_deliver_on_time(order.delivery_hours, courier_working_hours) and
-                                         (order.type == Order.TypeOrder.READY or
-                                          order.type == Order.TypeOrder.PROCESSING and
-                                          order.courier_id == courier_id),
+        return list(filter(lambda order:
+                           order.region in courier_regions and
+                           order.weight <= courier_payload and
+                           can_deliver_on_time(order.delivery_hours, courier_working_hours) and
+                           order.type == Order.TypeOrder.READY,
                            self.orders))
 
     def update_order(self, order: Order):

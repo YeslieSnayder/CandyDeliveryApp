@@ -1,7 +1,4 @@
-from model.objects import *
-from model.db import DB
-from datetime import datetime
-import numpy as np
+from model.db import *
 
 
 class Model:
@@ -34,11 +31,23 @@ class Model:
 
     def patch_courier(self, courier_id, courier_json):
         courier = self.get_courier(courier_id)
-        try:
-            courier.update(courier_json)
-            self.db.update_courier(courier)
-        except WrongCourierData:
-            raise WrongCourierData([courier_id])
+        if courier.current_order_ids is not None and ('regions' in courier_json or 'working_hours' in courier_json):
+            orders = []
+            for order_id in courier.current_order_ids:
+                order = self.db.get_order(order_id)
+                orders.append(order)
+                if order.region not in courier_json['regions'] or \
+                        not can_deliver_on_time(order.delivery_hours, courier.working_hours):
+                    order.update({
+                        'type': Order.TypeOrder.READY,
+                        'courier_id': None,
+                        'coefficient': None
+                    })
+                    self.db.update_order(order)
+            for order in orders:
+                courier.current_order_ids.remove(order.order_id)
+        courier.update(courier_json)
+        self.db.update_courier(courier)
         return courier
 
     def get_courier(self, courier_id):
@@ -50,26 +59,27 @@ class Model:
     def get_courier_full_data(self, courier_id):
         courier = self.get_courier(courier_id)
         courier_dict = courier.__dict__()
-        courier_dict["earnings"] = 500 * courier.courier_type['coefficient'] * courier.delivery_count
+        orders = self.db.get_complete_orders_of_courier(courier_id)
 
-        has_complete_orders = False
-        for index, region in enumerate(courier.orders_count):
-            if courier.orders_count[region] != 0:
-                has_complete_orders = True
-                break
-        if not has_complete_orders:
+        sum_coefficients = 0
+        processing_time_in_regions = {}
+        for order in orders:
+            sum_coefficients += order.coefficient
+            if order.region in processing_time_in_regions:
+                processing_time_in_regions[order.region] += order.lead_time
+            else:
+                processing_time_in_regions[order.region] = order.lead_time
+
+        courier_dict["earnings"] = 500 * sum_coefficients
+
+        if sum_coefficients == 0:
             return courier_dict
 
-        complete_orders = self.db.get_complete_orders_of_courier(courier.courier_id)
-        td = np.zeros(len(complete_orders), dtype=int)
-        for i in complete_orders:
-            td[i.region] += i.lead_time
-        for index, region in enumerate(courier.orders_count):
-            if courier.orders_count[region] != 0:
-                td[region] /= courier.orders_count[region]
-        t = np.min(td[np.nonzero(td)])
-        courier_dict['rating'] = (60 * 60 - min(t, 60 * 60)) / (60 * 60) * 5
+        for region in processing_time_in_regions:
+            processing_time_in_regions[region] = processing_time_in_regions[region] / courier.orders_count[region]
 
+        t = min(processing_time_in_regions.values())
+        courier_dict['rating'] = (60 ** 2 - min(t, 60 ** 2)) / 60 ** 2 * 5
         return courier_dict
 
     def get_order(self, order_id):
@@ -98,33 +108,63 @@ class Model:
         if courier is None:
             return [], None
 
+        if courier.current_order_ids is not None and len(courier.current_order_ids) > 0:
+            return courier.current_order_ids, courier.assign_time
+
         payload = courier.courier_type['payload']
-        orders = self.db.get_orders_for_assign(courier.courier_id, payload, courier.regions, courier.working_hours)
+        orders = self.db.get_orders_for_assign(payload, courier.regions, courier.working_hours)
         if len(orders) == 0:
             return [], None
 
+        orders.sort(key=lambda o: o.weight)
+        sum = 0
+        courier.current_order_ids = []
+        for order in orders:
+            if sum >= payload:
+                break
+            courier.current_order_ids.append(order.order_id)
+            order.update({
+                'courier_id': courier.courier_id,
+                'type': Order.TypeOrder.PROCESSING,
+                'coefficient': courier.courier_type['coefficient']
+            })
+            sum += order.weight
+            self.db.update_order(order)
+
         if courier.assign_time is None:
             courier.update({'assign_time': get_str_from_time(datetime.now())})
-
-        for order in orders:
-            if order.courier_id == 0 and order.type == Order.TypeOrder.READY:
-                order.update({'courier_id': courier.courier_id, 'type': Order.TypeOrder.PROCESSING})
-                self.db.update_order(order)
-
-        courier.prev_order_time = courier.assign_time
         self.db.update_courier(courier)
 
-        return [o.order_id for o in orders], courier.assign_time
+        return courier.current_order_ids, courier.assign_time
 
     def complete_order(self, json):
-        order = self.get_order(json["order_id"])
-        courier = self.get_courier(json["courier_id"])
-        order.complete(json, courier.prev_order_time)
-        courier.prev_order_time = order.complete_time
-        if courier.orders_count[order.region] is None:
-            courier.orders_count[order.region] = 1
+        order = self.get_order(json['order_id'])
+        courier = self.get_courier(json['courier_id'])
+
+        if courier.current_order_ids is None or \
+                order.order_id not in courier.current_order_ids or \
+                order.courier_id != courier.courier_id:
+            raise WrongCourierData([json['courier_id']])
+
+        if courier.last_order_id is None:
+            last_order_time = courier.assign_time
         else:
+            last_order = self.get_order(courier.last_order_id)
+            last_order_time = last_order.complete_time
+        process_time = (get_time_from_str(json['complete_time']) - get_time_from_str(last_order_time)).total_seconds()
+
+        order.update({
+            'type': Order.TypeOrder.COMPLETE,
+            'lead_time': process_time,
+            'complete_time': datetime.now().isoformat()
+        })
+        courier.current_order_ids.remove(order.order_id)
+        courier.update({'last_order_id': order.order_id})
+
+        if order.region in courier.orders_count:
             courier.orders_count[order.region] += 1
+        else:
+            courier.orders_count[order.region] = 1
         self.db.update_courier(courier)
         self.db.update_order(order)
 
