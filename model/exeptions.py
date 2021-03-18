@@ -8,3 +8,7 @@ class WrongOrderData(Exception):
 
 class DataNotFound(Exception):
     pass
+
+
+class WrongJSONRequest(Exception):
+    pass

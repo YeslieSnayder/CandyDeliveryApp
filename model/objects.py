@@ -1,6 +1,5 @@
-import numpy as np
-
 from datetime import datetime
+
 from model.exeptions import *
 
 
@@ -27,9 +26,15 @@ class Courier:
         if not Courier.is_correct_object_data(json_obj):
             raise WrongCourierData([json_obj['courier_id']])
         self.courier_id = json_obj['courier_id']
-        self.courier_type = json_obj['courier_type']
         self.regions = json_obj['regions']
         self.working_hours = json_obj['working_hours']
+        type = json_obj['courier_type']
+        if type == Courier.TypeCourier.FOOT['name']:
+            self.courier_type = Courier.TypeCourier.FOOT
+        elif type == Courier.TypeCourier.BIKE['name']:
+            self.courier_type = Courier.TypeCourier.BIKE
+        elif type == Courier.TypeCourier.CAR['name']:
+            self.courier_type = Courier.TypeCourier.CAR
         self.delivery_count = delivery_count
         self.assign_time = None
         self.prev_order_time = None
@@ -43,7 +48,7 @@ class Courier:
     def __dict__(self):
         return {
             "courier_id": self.courier_id,
-            "courier_type": self.courier_type,
+            "courier_type": self.courier_type['name'],
             "regions": self.regions,
             "working_hours": self.working_hours
         }
@@ -66,10 +71,12 @@ class Courier:
         if 'assign_time' in json_obj:
             self.assign_time = json_obj['assign_time']
         if 'courier_type' in json_obj:
-            if json_obj['courier_type'] == Courier.TypeCourier.FOOT['name'] \
-                    or json_obj['courier_type'] == Courier.TypeCourier.BIKE['name'] \
-                    or json_obj['courier_type'] == Courier.TypeCourier.CAR['name']:
-                self.courier_type = json_obj['courier_type']
+            if json_obj['courier_type'] == Courier.TypeCourier.FOOT['name']:
+                self.courier_type = Courier.TypeCourier.FOOT
+            elif json_obj['courier_type'] == Courier.TypeCourier.BIKE['name']:
+                self.courier_type = Courier.TypeCourier.BIKE
+            elif json_obj['courier_type'] == Courier.TypeCourier.CAR['name']:
+                self.courier_type = Courier.TypeCourier.CAR
             else:
                 raise WrongCourierData()
 
@@ -118,6 +125,14 @@ class Order:
         self.complete_time = None
         self.lead_time = None
         self.courier_id = 0
+
+    def __dict__(self):
+        return {
+            "order_id": self.order_id,
+            "weight": self.weight,
+            "region": self.region,
+            "delivery_hours": self.region
+        }
 
     def update(self, json_obj):
         if len(json_obj) == 0 \
