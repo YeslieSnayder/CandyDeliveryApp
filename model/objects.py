@@ -24,18 +24,18 @@ class Courier:
         CAR = {'name': 'car', 'payload': 50, 'coefficient': 9}
 
     def __init__(self, json_obj):
-        if not Courier.is_correct_object_data(json_obj):
+        if Courier.is_incorrect_object_data(json_obj):
             raise WrongCourierData([json_obj['courier_id']])
         self.courier_id = json_obj['courier_id']
         self.regions = json_obj['regions']
         self.working_hours = json_obj['working_hours']
 
-        type = json_obj['courier_type']
-        if type == Courier.TypeCourier.FOOT['name']:
+        c_type = json_obj['courier_type']
+        if c_type == Courier.TypeCourier.FOOT['name']:
             self.courier_type = Courier.TypeCourier.FOOT
-        elif type == Courier.TypeCourier.BIKE['name']:
+        elif c_type == Courier.TypeCourier.BIKE['name']:
             self.courier_type = Courier.TypeCourier.BIKE
-        elif type == Courier.TypeCourier.CAR['name']:
+        elif c_type == Courier.TypeCourier.CAR['name']:
             self.courier_type = Courier.TypeCourier.CAR
 
         if 'current_order_ids' in json_obj:
@@ -53,10 +53,10 @@ class Courier:
         else:
             self.last_order_id = None
 
+        self.orders_count = {}
         if 'orders_count' in json_obj:
-            self.orders_count = json_obj['orders_count']
-        else:
-            self.orders_count = {}
+            for k in json_obj['orders_count']:
+                self.orders_count[int(k)] = json_obj['orders_count'][k]
         for r in self.regions:
             if r not in self.orders_count:
                 self.orders_count[r] = 0
@@ -77,7 +77,7 @@ class Courier:
                 'assign_time' not in json_obj and \
                 'last_order_id' not in json_obj and \
                 'orders_count' not in json_obj or \
-                not Courier.is_correct_data_type(json_obj):
+                Courier.is_incorrect_data_type(json_obj):
             raise WrongCourierData([self.courier_id])
 
         if 'regions' in json_obj:
@@ -104,32 +104,34 @@ class Courier:
             self.orders_count = json_obj['orders_count']
 
     @staticmethod
-    def is_correct_object_data(data):
-        if len(data) == 0 or \
-                not Courier.is_correct_data_type(data) or \
-                data['courier_id'] < 1 or \
-                data['courier_type'] != Courier.TypeCourier.FOOT['name'] and \
-                data['courier_type'] != Courier.TypeCourier.BIKE['name'] and \
-                data['courier_type'] != Courier.TypeCourier.CAR['name']:
-            return False
-        return True
+    def is_incorrect_object_data(data):
+        return len(data) == 0 or \
+            Courier.is_incorrect_data_type(data) or \
+            data['courier_id'] < 1 or \
+            data['courier_type'] != Courier.TypeCourier.FOOT['name'] and \
+            data['courier_type'] != Courier.TypeCourier.BIKE['name'] and \
+            data['courier_type'] != Courier.TypeCourier.CAR['name']
 
     @staticmethod
-    def is_correct_data_type(data):
+    def is_incorrect_data_type(data):
         if 'courier_id' in data and type(data['courier_id']) != int or \
                 'courier_type' in data and type(data['courier_type']) != str or \
                 'regions' in data and type(data['regions']) != list or \
                 'working_hours' in data and type(data['working_hours']) != list or \
-                'current_order_ids' in data and type(data['current_order_ids']) != list or \
-                'assign_time' in data and type(data['assign_time']) != str or \
-                'last_order_id' in data and type(data['last_order_id']) != int or \
-                'orders_count' in data and type(data['orders_count']) != dict:
-            return False
+                'current_order_ids' in data and data['current_order_ids'] is not None and \
+                type(data['current_order_ids']) != list or \
+                'assign_time' in data and data['assign_time'] is not None and \
+                type(data['assign_time']) != str or \
+                'last_order_id' in data and data['last_order_id'] is not None and \
+                type(data['last_order_id']) != int or \
+                'orders_count' in data and data['orders_count'] is not None and \
+                type(data['orders_count']) != dict:
+            return True
         if 'working_hours' in data:
             for hours in data['working_hours']:
                 if len(hours) != 11 or not re.search(r'\d{2}:\d{2}-\d{2}:\d{2}', hours):
-                    return False
-        return True
+                    return True
+        return False
 
 
 class Order:
@@ -142,7 +144,7 @@ class Order:
     Additional information:
     type ->            type of order process: TypeOrder {READY, PROCESSING, COMPLETE}
     courier_id ->      identifier of courier who toke the order: integer >= 1, if 0 => no courier
-    lead_time ->       time spent on that order: str {1985-04-12T23:20:50.52Z}
+    lead_time ->       time spent on that order: long int
     complete_time ->   time when the order was completed: str {1985-04-12T23:20:50.52Z}
     coefficient ->     coefficient of courier's type
     """
@@ -153,7 +155,7 @@ class Order:
         COMPLETE = 'complete'
 
     def __init__(self, obj):
-        if not Order.is_correct_data_object(obj):
+        if Order.is_incorrect_data_object(obj):
             raise WrongOrderData([obj['order_id']])
         self.order_id = obj['order_id']
         self.weight = obj['weight']
@@ -176,7 +178,10 @@ class Order:
             self.lead_time = None
 
         if 'complete_time' in obj:
-            self.complete_time = obj['complete_time']
+            if obj['complete_time'] is None:
+                self.complete_time = None
+            else:
+                self.complete_time = obj['complete_time'].strip('"')
         else:
             self.complete_time = None
 
@@ -216,24 +221,22 @@ class Order:
         if 'courier_id' in json_obj:
             self.courier_id = json_obj['courier_id']
         if 'lead_time' in json_obj:
-            self.courier_id = json_obj['lead_time']
+            self.lead_time = json_obj['lead_time']
         if 'complete_time' in json_obj:
             self.complete_time = json_obj['complete_time']
         if 'coefficient' in json_obj:
-            self.complete_time = json_obj['coefficient']
+            self.coefficient = json_obj['coefficient']
 
     @staticmethod
-    def is_correct_data_object(data):
-        if len(data) == 0 \
-                or 'order_id' not in data or type(data['order_id']) != int \
-                or 'weight' not in data or (type(data['weight']) != float and type(data['weight']) != int) \
-                or 'region' not in data or type(data['region']) != int \
-                or 'delivery_hours' not in data or type(data['delivery_hours']) != list \
-                or data['order_id'] < 1 \
-                or data['region'] < 1 \
-                or data['weight'] < 0.01 or data['weight'] > 50:
-            return False
-        return True
+    def is_incorrect_data_object(data):
+        return len(data) == 0 or \
+            'order_id' not in data or type(data['order_id']) != int or \
+            'weight' not in data or (type(data['weight']) != float and type(data['weight']) != int) or \
+            'region' not in data or type(data['region']) != int or \
+            'delivery_hours' not in data or type(data['delivery_hours']) != list or \
+            data['order_id'] < 1 or \
+            data['region'] < 1 or \
+            data['weight'] < 0.01 or data['weight'] > 50
 
 
 def get_time_from_str(str_time):

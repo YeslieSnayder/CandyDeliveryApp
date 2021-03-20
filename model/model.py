@@ -1,17 +1,10 @@
-from model.db import *
+from model.db.db import DB
+from model.objects import *
 
 
 class Model:
     def __init__(self):
         self.db = DB()
-
-    # TODO: Remove after debug
-    def get_couriers(self):
-        return self.db.get_couriers()
-
-    # TODO: Remove after debug
-    def get_orders(self):
-        return self.db.get_orders()
 
     def create_couriers(self, couriers_json_list):
         wrong_ids = []
@@ -79,7 +72,7 @@ class Model:
             processing_time_in_regions[region] = processing_time_in_regions[region] / courier.orders_count[region]
 
         t = min(processing_time_in_regions.values())
-        courier_dict['rating'] = (60 ** 2 - min(t, 60 ** 2)) / 60 ** 2 * 5
+        courier_dict['rating'] = round((60 ** 2 - min(t, 60 ** 2)) / 60 ** 2 * 5, 2)
         return courier_dict
 
     def get_order(self, order_id):
@@ -112,15 +105,17 @@ class Model:
             return courier.current_order_ids, courier.assign_time
 
         payload = courier.courier_type['payload']
-        orders = self.db.get_orders_for_assign(payload, courier.regions, courier.working_hours)
+        orders = self.db.get_orders_for_assign(payload, courier.regions)
         if len(orders) == 0:
             return [], None
 
+        orders = list(filter(
+            lambda order_item: can_deliver_on_time(order_item.delivery_hours, courier.working_hours), orders))
         orders.sort(key=lambda o: o.weight)
-        sum = 0
+        load_sum = 0
         courier.current_order_ids = []
         for order in orders:
-            if sum >= payload:
+            if load_sum >= payload:
                 break
             courier.current_order_ids.append(order.order_id)
             order.update({
@@ -128,11 +123,10 @@ class Model:
                 'type': Order.TypeOrder.PROCESSING,
                 'coefficient': courier.courier_type['coefficient']
             })
-            sum += order.weight
+            load_sum += order.weight
             self.db.update_order(order)
 
-        if courier.assign_time is None:
-            courier.update({'assign_time': get_str_from_time(datetime.now())})
+        courier.update({'assign_time': get_str_from_time(datetime.now())})
         self.db.update_courier(courier)
 
         return courier.current_order_ids, courier.assign_time
@@ -156,7 +150,7 @@ class Model:
         order.update({
             'type': Order.TypeOrder.COMPLETE,
             'lead_time': process_time,
-            'complete_time': datetime.now().isoformat()
+            'complete_time': json['complete_time']
         })
         courier.current_order_ids.remove(order.order_id)
         courier.update({'last_order_id': order.order_id})
@@ -167,6 +161,26 @@ class Model:
             courier.orders_count[order.region] = 1
         self.db.update_courier(courier)
         self.db.update_order(order)
+
+
+def can_deliver_on_time(delivery_time: list, working_hours: list):
+    """
+    The method checks the delivery time that should be in boundary of working hours.
+    :param delivery_time: delivery time of an order.
+    :param working_hours: working hours of a courier.
+    :return: True - if delivery time falls under working hours,
+    otherwise - False.
+    """
+    for del_time in delivery_time:
+        delivery_start = datetime.strptime(del_time[:5], '%H:%M')
+        delivery_end = datetime.strptime(del_time[6:], '%H:%M')
+
+        for work_time in working_hours:
+            work_start = datetime.strptime(work_time[:5], '%H:%M')
+            work_end = datetime.strptime(work_time[6:], '%H:%M')
+            if delivery_start <= work_start < delivery_end or delivery_start < work_end <= delivery_end:
+                return True
+    return False
 
 
 def get_str_from_time(date_time):
