@@ -20,7 +20,7 @@ Content-Type: application/json
 
  client.test("Response is satisfied to the answer", function() {
      client.assert(response.body.hasOwnProperty("couriers"), "Cannot find 'couriers' option in response")
-     var expectedID = [1, 2, 3]
+     var expectedID = [15, 16, 17]
      var res = response.body['couriers'];
      client.assert(res.length === expectedID.length, "The size of given data do not equal to expected size")
      for(var i = 0; i < res.length; i++) {
@@ -95,13 +95,13 @@ Content-Type: application/json
 
 {
   "data": [
-    {"courier_id": 4,"regions": [1, 12, 22],"working_hours": ["11:35-14:05", "09:00-11:00"]},
-    {"courier_id": 5,"courier_type": "bike","working_hours": ["09:00-18:00"]},
-    {"courier_id": 6,"courier_type": "car","regions": [12, 22, 23, 33]},
-    {"courier_id": 7,"courier_type": "bike"},
-    {"courier_id": 8,"regions": [2, 3]},
-    {"courier_id": 9,"working_hours": ["09:00-18:00"]},
-    {"courier_id": 10}
+    {"courier_id": 1,"regions": [1, 12, 22],"working_hours": ["11:35-14:05", "09:00-11:00"]},
+    {"courier_id": 2,"courier_type": "bike","working_hours": ["09:00-18:00"]},
+    {"courier_id": 3,"courier_type": "car","regions": [12, 22, 23, 33]},
+    {"courier_id": 4,"courier_type": "bike"},
+    {"courier_id": 5,"regions": [2, 3]},
+    {"courier_id": 6,"working_hours": ["09:00-18:00"]},
+    {"courier_id": 7}
   ]
 }
 
@@ -121,7 +121,7 @@ Content-Type: application/json
 
  client.test("Response is satisfied to the answer", function() {
      client.assert(response.body.hasOwnProperty("validation_error"), "Cannot find 'couriers' option in response")
-     var expectedID = [4, 5, 6, 7, 8, 9, 10]
+     var expectedID = [1, 2, 3, 4, 5, 6, 7]
      var res = response.body['validation_error']['couriers'];
      client.assert(res.length === expectedID.length, "The size of given data do not equal to expected size")
      for(var i = 0; i < res.length; i++) {
@@ -144,13 +144,13 @@ Content-Type: application/json
     {"courier_id": 11.1,"courier_type": "foot","regions": [1, 12, 22],"working_hours": ["11:35-14:05", "09:00-11:00"]},
     {"courier_id": "12","courier_type": "bike","regions": [22],"working_hours": ["09:00-18:00"]},
     {"courier_id": 0.13,"courier_type": "car","regions": [12, 22, 23, 33],"working_hours": []},
-    {"courier_id": 14,"courier_type": 1,"regions": [1, 12, 22],"working_hours": ["11:35-14:05", "09:00-11:00"]},
-    {"courier_id": 15,"courier_type": 0.5,"regions": 22,"working_hours": ["09:00-18:00"]},
-    {"courier_id": 16,"courier_type": "bike","regions": 22,"working_hours": ["09:00-18:00"]},
-    {"courier_id": 17,"courier_type": "foot","regions": "12, 22, 23, 33","working_hours": []},
-    {"courier_id": 18,"courier_type": "car","regions": [1, 12, 22],"working_hours": "11:35-14:05"},
-    {"courier_id": 19,"courier_type": "car","regions": [12, 22, 23, 33],"working_hours": 10},
-    {"courier_id": 20,"courier_type": "bike","regions": [22],"working_hours": [22, 51]}
+    {"courier_id": 8,"courier_type": 1,"regions": [1, 12, 22],"working_hours": ["11:35-14:05", "09:00-11:00"]},
+    {"courier_id": 9,"courier_type": 0.5,"regions": 22,"working_hours": ["09:00-18:00"]},
+    {"courier_id": 10,"courier_type": "bike","regions": 22,"working_hours": ["09:00-18:00"]},
+    {"courier_id": 11,"courier_type": "foot","regions": "12, 22, 23, 33","working_hours": []},
+    {"courier_id": 12,"courier_type": "car","regions": [1, 12, 22],"working_hours": "11:35-14:05"},
+    {"courier_id": 13,"courier_type": "car","regions": [12, 22, 23, 33],"working_hours": 10},
+    {"courier_id": 14,"courier_type": "bike","regions": [22],"working_hours": [22, 51]}
   ]
 }
 
@@ -170,7 +170,7 @@ Content-Type: application/json
 
  client.test("Response is satisfied to the answer", function() {
      client.assert(response.body.hasOwnProperty("validation_error"), "Cannot find 'couriers' option in response")
-     var expectedID = [11.1, "12", 0.13, 14, 15, 16, 17, 18, 19, 20]
+     var expectedID = [11.1, "12", 0.13, 8, 9, 10, 11, 12, 13, 14]
      var res = response.body['validation_error']['couriers'];
      client.assert(res.length === expectedID.length, "The size of given data do not equal to expected size")
      for(var i = 0; i < res.length; i++) {
