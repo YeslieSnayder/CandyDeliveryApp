@@ -1,0 +1,5 @@
+{
+  "courier_type": "bike",
+  "regions": [1, 12, 22],
+  "working_hours": ["11:35-14:05", "09:00-11:00"]
+}

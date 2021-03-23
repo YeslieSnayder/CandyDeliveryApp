@@ -116,3 +116,20 @@ class View:
         :return: a response that contains JSON-object with order id.
         """
         return make_response(jsonify({"order_id": order_id}), 200)
+
+    @staticmethod
+    def send_error_missing_id(message, obj_type):
+        """
+        HTTP 400 Bad Request
+        The method returns response contains JSON-object with information about
+        wrong request with missing id of element.
+        :param message: Additional message that will send to user.
+        :param obj_type: 'courier' or 'order'.
+        :return: a response that contains JSON-object with validation error
+        and small description of the problem.
+        """
+        return make_response(jsonify({"validation_error": {
+            "error": 'Missing id',
+            "object_type": obj_type,
+            "description": message
+        }}), 400)

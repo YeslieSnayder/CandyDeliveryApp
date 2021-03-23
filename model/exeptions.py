@@ -12,3 +12,7 @@ class DataNotFound(Exception):
 
 class WrongJSONRequest(Exception):
     pass
+
+
+class MissingID(Exception):
+    pass

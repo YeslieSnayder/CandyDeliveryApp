@@ -29,6 +29,8 @@ def post_couriers():
         return View.send_couriers_created(ids)
     except WrongCourierData as e:
         return View.send_couriers_bad_request(e.args[0])
+    except MissingID as e:
+        return View.send_error_missing_id(e.args[0], "courier")
     except WrongJSONRequest:
         return View.send_incorrect_json_bad_request()
 
@@ -58,6 +60,8 @@ def post_orders():
         return View.send_orders_created(ids)
     except WrongOrderData as e:
         return View.send_orders_bad_request(e.args[0])
+    except MissingID as e:
+        return View.send_error_missing_id(e.args[0], "order")
     except WrongJSONRequest:
         return View.send_incorrect_json_bad_request()
 
@@ -67,7 +71,7 @@ def post_orders_assign():
     try:
         json = check_and_return_json()
         if "courier_id" not in json:
-            return View.send_incorrect_json_bad_request()
+            return View.send_error_missing_id("No parameter \"courier_id\"", "order")
 
         order_ids, assign_time = model.assign_order(model.get_courier(courier_id=json['courier_id']))
         return View.send_orders_assign(order_ids, assign_time)

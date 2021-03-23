@@ -105,8 +105,13 @@ class Courier:
 
     @staticmethod
     def is_incorrect_object_data(data):
+        if Courier.is_incorrect_data_type(data):
+            return True
         return len(data) == 0 or \
-            Courier.is_incorrect_data_type(data) or \
+            'courier_id' not in data or \
+            'courier_type' not in data or \
+            'regions' not in data or \
+            'working_hours' not in data or \
             data['courier_id'] < 1 or \
             data['courier_type'] != Courier.TypeCourier.FOOT['name'] and \
             data['courier_type'] != Courier.TypeCourier.BIKE['name'] and \
@@ -129,7 +134,9 @@ class Courier:
             return True
         if 'working_hours' in data:
             for hours in data['working_hours']:
-                if len(hours) != 11 or not re.search(r'\d{2}:\d{2}-\d{2}:\d{2}', hours):
+                if type(hours) != str or len(hours) != 11:
+                    return True
+                if not re.search(r'\d{2}:\d{2}-\d{2}:\d{2}', hours):
                     return True
         return False
 

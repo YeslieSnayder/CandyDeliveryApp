@@ -11,7 +11,7 @@ class Model:
         correct_couriers = []
         for obj in couriers_json_list:
             if 'courier_id' not in obj:
-                raise WrongOrderData(['Object does not have parameter "courier_id"'])
+                raise MissingID('Object does not have parameter "courier_id"')
             try:
                 correct_couriers.append(Courier(obj))
             except WrongCourierData as e:
@@ -86,7 +86,7 @@ class Model:
         correct_orders = []
         for order in orders_json_list:
             if 'order_id' not in order:
-                raise WrongOrderData(['Object does not have parameter "order_id"'])
+                raise MissingID('Object does not have parameter "order_id"')
             try:
                 correct_orders.append(Order(order))
             except WrongOrderData as e:
