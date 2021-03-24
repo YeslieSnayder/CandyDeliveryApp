@@ -1,10 +1,12 @@
 import re
 
-from flask import Flask, request, make_response, jsonify
+from flask import Flask, request
 
 from model.exeptions import *
 from model.model import Model
-from view import View
+from view.view import View
+from config import *
+
 
 app = Flask(__name__)
 model = Model()
@@ -12,6 +14,10 @@ model = Model()
 
 @app.route('/couriers', methods=['POST'])
 def post_couriers():
+    """
+    Inserts couriers from request to the database.
+    :return: The result of operation (code 201 or 400).
+    """
     try:
         json = check_and_return_json()
         if "data" not in json:
@@ -29,6 +35,11 @@ def post_couriers():
 
 @app.route('/couriers/<int:courier_id>', methods=['PATCH'])
 def patch_courier(courier_id):
+    """
+    Changes data of a courier with id from input.
+    :param courier_id: id of courier who will be changed.
+    :return: The result of operation (code 200, 400, or 404).
+    """
     try:
         json = check_and_return_json()
         info = model.patch_courier(courier_id, json)
@@ -43,6 +54,10 @@ def patch_courier(courier_id):
 
 @app.route('/orders', methods=['POST'])
 def post_orders():
+    """
+    Inserts orders from request to the database.
+    :return: The result of the operation (code 201 or 400).
+    """
     try:
         json = check_and_return_json()
         if "data" not in json:
@@ -60,6 +75,11 @@ def post_orders():
 
 @app.route('/orders/assign', methods=['POST'])
 def post_orders_assign():
+    """
+    Assigns orders that match the courier's data.
+    :return: The result of the operation (code 200 or 400)
+    with order IDs corresponding to the courier data.
+    """
     try:
         json = check_and_return_json()
         if "courier_id" not in json:
@@ -77,6 +97,10 @@ def post_orders_assign():
 
 @app.route('/orders/complete', methods=['POST'])
 def post_orders_complete():
+    """
+    Makes the order completed.
+    :return: The result of the operation (code 200 or 400).
+    """
     try:
         json = check_and_return_json()
         if ("courier_id" or "order_id" or "complete_time") not in json:
@@ -94,6 +118,13 @@ def post_orders_complete():
 
 @app.route('/couriers/<int:courier_id>', methods=['GET'])
 def get_courier(courier_id):
+    """
+    Returns information of the courier with ID from input.
+    :param courier_id: ID of the existing courier.
+    Information about the courier with this ID will be included to the response.
+    :return: The result of the operation (code 200, 400, or 404) with
+    information about the courier with ID from input.
+    """
     try:
         courier_data = model.get_courier_full_data(courier_id)
         return View.send_courier_full_info(courier_data)
@@ -119,4 +150,4 @@ def check_and_return_json():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)
+    app.run(host=HOST, port=PORT)

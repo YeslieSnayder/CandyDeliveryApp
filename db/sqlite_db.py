@@ -1,9 +1,9 @@
 import json
 import sqlite3
 
-from model.db.config import *
+from db.config import *
 from model.objects import *
-from model.db.db_interface import DB
+from db.db_interface import DB
 
 
 class SQLiteDB(DB):

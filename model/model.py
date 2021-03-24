@@ -1,4 +1,4 @@
-from model.db.sqlite_db import SQLiteDB
+from db.sqlite_db import SQLiteDB
 from model.objects import *
 
 

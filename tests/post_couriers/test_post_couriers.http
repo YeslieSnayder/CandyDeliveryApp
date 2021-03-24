@@ -1,4 +1,4 @@
-// TEST 1: Rigth request. POST request with parameters in file couriers.json
+// TEST 1: Right request. POST request with parameters in file couriers.json
 POST http://{{server}}:{{port}}/{{couriers}}
 Content-Type: application/json
 
