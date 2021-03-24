@@ -63,13 +63,6 @@ Content-Type: application/json
        }
        client.assert(found, "The response data and expected result are not equal")
      }
-     var complete_time = response.body["assign_time"]
-     var minute = parseInt(complete_time[15])
-     minute += 1
-     complete_time[15] = minute.toString()
-     client.global.set("complete_time", complete_time)
-     client.log("Assign time: " + response.body["assign_time"])
-     client.log("Complete time: " + complete_time)
  });
 %}
 
