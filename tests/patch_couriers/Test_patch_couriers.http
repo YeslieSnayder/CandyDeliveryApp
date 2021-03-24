@@ -1,0 +1,413 @@
+// Test data
+POST http://{{server}}:{{port}}/{{api}}
+Content-Type: application/json
+
+< ./couriers.json
+
+###
+// TEST 1: Change courier type
+PATCH http://{{server}}:{{port}}/{{api}}/1
+Content-Type: application/json
+
+{
+  "courier_type": "bike"
+}
+
+> {%
+ client.test("Request executed successfully", function() {
+     client.assert(response.status === 200, "Response status is not 200");
+ });
+
+ client.test("Response content-type is json", function() {
+     var type = response.contentType.mimeType;
+     client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+ client.test("Request body is exist", function() {
+     client.assert(response.body.hasOwnProperty("courier_id"), "Cannot find 'courier_id' option in response")
+     client.assert(response.body.hasOwnProperty("courier_type"), "Cannot find 'courier_type' option in response")
+     client.assert(response.body.hasOwnProperty("regions"), "Cannot find 'regions' option in response")
+     client.assert(response.body.hasOwnProperty("working_hours"), "Cannot find 'working_hours' option in response")
+ });
+
+ client.test("Response is satisfied to the answer", function() {
+     client.assert(response.body['courier_id'] === 1, "Obtained response does not satisfy the expected result")
+     client.assert(response.body['courier_type'] === "bike", "Obtained response does not satisfy the expected result")
+     var regions = [1, 12, 22]
+     for
+     client.assert(response.body['regions'] == [1, 12, 22], "Obtained response does not satisfy the expected result")
+     client.assert(response.body['working_hours'] == ["11:35-14:05", "09:00-11:00"], "Obtained response does not satisfy the expected result")
+ });
+%}
+
+
+
+
+###
+// TEST 2: Change regions
+PATCH http://{{server}}:{{port}}/{{api}}/2
+Content-Type: application/json
+
+{
+  "regions": [10, 15]
+}
+
+> {%
+ client.test("Request executed successfully", function() {
+     client.assert(response.status === 200, "Response status is not 200");
+ });
+
+ client.test("Response content-type is json", function() {
+     var type = response.contentType.mimeType;
+     client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+ client.test("Request body is exist", function() {
+     client.assert(response.body.hasOwnProperty("courier_id"), "Cannot find 'courier_id' option in response")
+     client.assert(response.body.hasOwnProperty("courier_type"), "Cannot find 'courier_type' option in response")
+     client.assert(response.body.hasOwnProperty("regions"), "Cannot find 'regions' option in response")
+     client.assert(response.body.hasOwnProperty("working_hours"), "Cannot find 'working_hours' option in response")
+ });
+
+ client.test("Response is satisfied to the answer", function() {
+     client.assert(response.body['courier_id'] === 2, "Obtained response does not satisfy the expected result")
+     client.assert(response.body['courier_type'] === "bike", "Obtained response does not satisfy the expected result")
+     var res = response.body['regions'];
+     var expected = [10, 15];
+     for(var i = 0; i < res.length; i++) {
+       client.assert(res[i] === expected[i], "The response data and expected result are not equal")
+     }
+     res = response.body['working_hours'];
+     expected = ["09:00-18:00"];
+     for(var i = 0; i < res.length; i++) {
+       client.assert(res[i] === expected[i], "The response data and expected result are not equal")
+     }
+ });
+%}
+
+
+
+
+###
+// TEST 3: Change working hours
+PATCH http://{{server}}:{{port}}/{{api}}/3
+Content-Type: application/json
+
+{
+  "working_hours": ["12:00-14:00", "10:05-11:15", "09:14-09:59"]
+}
+
+> {%
+ client.test("Request executed successfully", function() {
+     client.assert(response.status === 200, "Response status is not 200");
+ });
+
+ client.test("Response content-type is json", function() {
+     var type = response.contentType.mimeType;
+     client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+ client.test("Request body is exist", function() {
+     client.assert(response.body.hasOwnProperty("courier_id"), "Cannot find 'courier_id' option in response")
+     client.assert(response.body.hasOwnProperty("courier_type"), "Cannot find 'courier_type' option in response")
+     client.assert(response.body.hasOwnProperty("regions"), "Cannot find 'regions' option in response")
+     client.assert(response.body.hasOwnProperty("working_hours"), "Cannot find 'working_hours' option in response")
+ });
+
+ client.test("Response is satisfied to the answer", function() {
+     client.assert(response.body['courier_id'] === 3, "Obtained response does not satisfy the expected result")
+     client.assert(response.body['courier_type'] === "car", "Obtained response does not satisfy the expected result")
+     var res = response.body['regions'];
+     var expected = [12, 22, 23, 33];
+     for(var i = 0; i < res.length; i++) {
+       client.assert(res[i] === expected[i], "The response data and expected result are not equal")
+     }
+     res = response.body['working_hours'];
+     expected = ["12:00-14:00", "10:05-11:15", "09:14-09:59"];
+     for(var i = 0; i < res.length; i++) {
+       client.assert(res[i] === expected[i], "The response data and expected result are not equal")
+     }
+ });
+%}
+
+
+
+
+###
+// TEST 4: Change several parameters
+PATCH http://{{server}}:{{port}}/{{api}}/4
+Content-Type: application/json
+
+{
+  "courier_type": "foot",
+  "regions": [13, 14, 15]
+}
+
+###
+PATCH http://{{server}}:{{port}}/{{api}}/4
+Content-Type: application/json
+
+{
+  "working_hours": ["11:00-15:05", "07:00-10:00"]
+}
+
+> {%
+ client.test("Request executed successfully", function() {
+     client.assert(response.status === 200, "Response status is not 200");
+ });
+
+ client.test("Response content-type is json", function() {
+     var type = response.contentType.mimeType;
+     client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+ client.test("Request body is exist", function() {
+     client.assert(response.body.hasOwnProperty("courier_id"), "Cannot find 'courier_id' option in response")
+     client.assert(response.body.hasOwnProperty("courier_type"), "Cannot find 'courier_type' option in response")
+     client.assert(response.body.hasOwnProperty("regions"), "Cannot find 'regions' option in response")
+     client.assert(response.body.hasOwnProperty("working_hours"), "Cannot find 'working_hours' option in response")
+ });
+
+ client.test("Response is satisfied to the answer", function() {
+     client.assert(response.body['courier_id'] === 4, "Obtained response does not satisfy the expected result")
+     client.assert(response.body['courier_type'] === "foot", "Obtained response does not satisfy the expected result")
+     var res = response.body['regions'];
+     var expected = [13, 14, 15];
+     for(var i = 0; i < res.length; i++) {
+       client.assert(res[i] === expected[i], "The response data and expected result are not equal")
+     }
+     res = response.body['working_hours'];
+     expected = ["11:00-15:05", "07:00-10:00"];
+     for(var i = 0; i < res.length; i++) {
+       client.assert(res[i] === expected[i], "The response data and expected result are not equal")
+     }
+ });
+%}
+
+
+
+
+###
+// TEST 5: Missing data
+PATCH http://{{server}}:{{port}}/{{api}}/1
+Content-Type: application/json
+
+{}
+
+> {%
+ client.test("Request executed successfully", function() {
+     client.assert(response.status === 400, "Response status is not 400");
+ });
+
+ client.test("Response content-type is json", function() {
+     var type = response.contentType.mimeType;
+     client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+ client.test("Request body is exist", function() {
+     client.assert(response.body.hasOwnProperty("validation_error"), "Cannot find 'validation_error' option in response")
+ });
+%}
+
+
+
+
+###
+// TEST 6: Prohibited data
+PATCH http://{{server}}:{{port}}/{{api}}/3
+Content-Type: application/json
+
+{
+  "earnings": 100000000
+}
+
+> {%
+ client.test("Request executed successfully", function() {
+     client.assert(response.status === 400, "Response status is not 400");
+ });
+
+ client.test("Response content-type is json", function() {
+     var type = response.contentType.mimeType;
+     client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+ client.test("Request body is exist", function() {
+     client.assert(response.body.hasOwnProperty("validation_error"), "Cannot find 'validation_error' option in response")
+ });
+%}
+
+
+
+
+###
+// TEST 7: Wrong data types
+PATCH http://{{server}}:{{port}}/{{api}}/2
+Content-Type: application/json
+
+{
+  "courier_type": 1,
+  "working_hours": ["11:35-14:05", "09:00-11:00"]
+}
+
+> {%
+ client.test("Request executed successfully", function() {
+     client.assert(response.status === 400, "Response status is not 400");
+ });
+
+ client.test("Response content-type is json", function() {
+     var type = response.contentType.mimeType;
+     client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+ client.test("Request body is exist", function() {
+     client.assert(response.body.hasOwnProperty("validation_error"), "Cannot find 'validation_error' option in response")
+     client.assert(response.body["validation_error"].hasOwnProperty("couriers"), "Cannot find 'couriers' option in response")
+ });
+
+ client.test("Response is satisfied to the answer", function() {
+     var res = response.body["validation_error"]['couriers'];
+     for(var i = 0; i < res.length; i++) {
+       client.assert(res[i].id !== undefined, "Given data does not have property 'id'")
+       client.assert(res[i].id === 2, "The response data and expected result are not equal")
+     }
+ });
+%}
+
+
+
+
+###
+// TEST 8: Wrong data types
+PATCH http://{{server}}:{{port}}/{{api}}/4
+Content-Type: application/json
+
+{
+  "courier_type": "bike",
+  "regions": "12, 13"
+}
+
+> {%
+ client.test("Request executed successfully", function() {
+     client.assert(response.status === 400, "Response status is not 400");
+ });
+
+ client.test("Response content-type is json", function() {
+     var type = response.contentType.mimeType;
+     client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+ client.test("Request body is exist", function() {
+     client.assert(response.body.hasOwnProperty("validation_error"), "Cannot find 'validation_error' option in response")
+     client.assert(response.body["validation_error"].hasOwnProperty("couriers"), "Cannot find 'couriers' option in response")
+ });
+
+ client.test("Response is satisfied to the answer", function() {
+     var res = response.body["validation_error"]['couriers'];
+     for(var i = 0; i < res.length; i++) {
+       client.assert(res[i].id !== undefined, "Given data does not have property 'id'")
+       client.assert(res[i].id === 4, "The response data and expected result are not equal")
+     }
+ });
+%}
+
+
+
+
+###
+// TEST 9: Wrong data types
+PATCH http://{{server}}:{{port}}/{{api}}/2
+Content-Type: application/json
+
+{
+  "working_hours": 22,
+  "regions": [22]
+}
+
+> {%
+ client.test("Request executed successfully", function() {
+     client.assert(response.status === 400, "Response status is not 400");
+ });
+
+ client.test("Response content-type is json", function() {
+     var type = response.contentType.mimeType;
+     client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+ client.test("Request body is exist", function() {
+     client.assert(response.body.hasOwnProperty("validation_error"), "Cannot find 'validation_error' option in response")
+     client.assert(response.body["validation_error"].hasOwnProperty("couriers"), "Cannot find 'couriers' option in response")
+ });
+
+ client.test("Response is satisfied to the answer", function() {
+     var res = response.body["validation_error"]['couriers'];
+     for(var i = 0; i < res.length; i++) {
+       client.assert(res[i].id !== undefined, "Given data does not have property 'id'")
+       client.assert(res[i].id === 2, "The response data and expected result are not equal")
+     }
+ });
+%}
+
+
+
+
+###
+// TEST 10: Check data after repeated POST-request
+POST http://{{server}}:{{port}}/{{api}}
+Content-Type: application/json
+
+< ./couriers.json
+
+###
+PATCH http://{{server}}:{{port}}/{{api}}/1
+Content-Type: application/json
+
+{
+  "regions": [12, 22, 23, 33],
+  "working_hours": []
+}
+
+###
+POST http://{{server}}:{{port}}/{{api}}
+Content-Type: application/json
+
+< ./couriers.json
+
+###
+PATCH http://{{server}}:{{port}}/{{api}}/1
+Content-Type: application/json
+
+{
+  "courier_type": "foot"
+}
+> {%
+ client.test("Request executed successfully", function() {
+     client.assert(response.status === 200, "Response status is not 200");
+ });
+
+ client.test("Response content-type is json", function() {
+     var type = response.contentType.mimeType;
+     client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+ client.test("Request body is exist", function() {
+     client.assert(response.body.hasOwnProperty("courier_id"), "Cannot find 'courier_id' option in response")
+     client.assert(response.body.hasOwnProperty("courier_type"), "Cannot find 'courier_type' option in response")
+     client.assert(response.body.hasOwnProperty("regions"), "Cannot find 'regions' option in response")
+     client.assert(response.body.hasOwnProperty("working_hours"), "Cannot find 'working_hours' option in response")
+ });
+
+ client.test("Response is satisfied to the answer", function() {
+     client.assert(response.body['courier_id'] === 1, "Obtained response does not satisfy the expected result")
+     client.assert(response.body['courier_type'] === "foot", "Obtained response does not satisfy the expected result")
+     var res = response.body['regions'];
+     var expected = [1, 12, 22];
+     for(var i = 0; i < res.length; i++) {
+       client.assert(res[i] === expected[i], "The response data and expected result are not equal")
+     }
+     res = response.body['working_hours'];
+     expected = ["11:35-14:05", "09:00-11:00"];
+     for(var i = 0; i < res.length; i++) {
+       client.assert(res[i] === expected[i], "The response data and expected result are not equal")
+     }
+ });
+%}
