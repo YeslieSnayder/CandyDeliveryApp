@@ -1,0 +1,186 @@
+// TEST 1: Rigth request. POST request with parameters in file orders.json
+POST http://{{server}}:{{port}}/{{orders}}
+Content-Type: application/json
+
+< ./orders.json
+
+> {%
+ client.test("Request executed successfully", function() {
+     client.assert(response.status === 201, "Response status is not 201");
+ });
+
+ client.test("Response content-type is json", function() {
+     var type = response.contentType.mimeType;
+     client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+ client.test("Request body is exist", function() {
+     client.assert(response.body.hasOwnProperty("orders"), "Cannot find 'orders' option in response")
+ });
+
+ client.test("Response is satisfied to the answer", function() {
+     var expectedID = [20, 21, 22]
+     var res = response.body['orders'];
+     client.assert(res.length === expectedID.length, "The size of given data do not equal to expected size")
+     for(var i = 0; i < res.length; i++) {
+       client.assert(res[i].id !== undefined, "Given data does not have property 'id'")
+       client.assert(res[i].id === expectedID[i], "The response data and expected result are not equal")
+     }
+ });
+%}
+
+
+
+
+###
+// TEST 2: POST request with empty data
+POST http://{{server}}:{{port}}/{{orders}}
+Content-Type: application/json
+
+{}
+
+> {%
+ client.test("Request executed successfully", function() {
+     client.assert(response.status === 400, "Response status is not 400");
+ });
+
+ client.test("Response content-type is json", function() {
+     var type = response.contentType.mimeType;
+     client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+ client.test("Request body is exist", function() {
+     client.assert(response.body.hasOwnProperty("validation_error"), "Cannot find 'validation_error' option in response")
+ });
+%}
+
+
+
+
+###
+// TEST 3: Missing 'order_id' of courier
+POST http://{{server}}:{{port}}/{{orders}}
+Content-Type: application/json
+
+{
+  "data": [
+    {"weight": 0.23,"region": 12,"delivery_hours": ["09:00-18:00"]},
+    {"weight": 1,"region": 1,"delivery_hours": ["13:00-18:00"]},
+    {"order_id": 1,"weight": 15,"region": 16,"delivery_hours": ["09:30-15:00"]}
+  ]
+}
+
+> {%
+ client.test("Request executed successfully", function() {
+     client.assert(response.status === 400, "Response status is not 400");
+ });
+
+ client.test("Response content-type is json", function() {
+     var type = response.contentType.mimeType;
+     client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+ client.test("Request body is exist", function() {
+     client.assert(response.body.hasOwnProperty("validation_error"), "Cannot find 'validation_error' option in response")
+ });
+%}
+
+
+
+
+###
+// TEST 4: Missing data
+POST http://{{server}}:{{port}}/{{orders}}
+Content-Type: application/json
+
+{
+  "data": [
+    {"order_id": 1,"region": 12,"delivery_hours": ["09:00-18:00"]},
+    {"order_id": 2,"weight": 15,"delivery_hours": ["09:00-18:00"]},
+    {"order_id": 3,"weight": 0.01,"region": 22},
+    {"order_id": 4,"delivery_hours": ["09:00-18:00"]},
+    {"order_id": 5,"region": 1},
+    {"order_id": 6,"weight": 0.01},
+    {"order_id": 7},
+    {"order_id": 8,"weight": 2,"region": 12,"delivery_hours": []}
+  ]
+}
+
+> {%
+ client.test("Request executed successfully", function() {
+     client.assert(response.status === 400, "Response status is not 400");
+ });
+
+ client.test("Response content-type is json", function() {
+     var type = response.contentType.mimeType;
+     client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+ client.test("Request body is exist", function() {
+     client.assert(response.body.hasOwnProperty("validation_error"), "Cannot find 'validation_error' option in response")
+ });
+
+ client.test("Response is satisfied to the answer", function() {
+     var expectedID = [1, 2, 3, 4, 5, 6, 7, 8]
+     var res = response.body['validation_error']['orders'];
+     client.assert(res.length === expectedID.length, "The size of given data do not equal to expected size")
+     for(var i = 0; i < res.length; i++) {
+       client.assert(res[i].id !== undefined, "Given data does not have property 'id'")
+       client.assert(res[i].id === expectedID[i], "The response data and expected result are not equal")
+     }
+ });
+%}
+
+
+
+
+###
+// TEST 5: Wrong data types
+POST http://{{server}}:{{port}}/{{orders}}
+Content-Type: application/json
+
+{
+  "data": [
+    {"order_id": 11.1,"weight": 0.23,"region": 12,"delivery_hours": ["09:00-18:00"]},
+    {"order_id": "12","weight": 15,"region": 1,"delivery_hours": ["09:00-18:00"]},
+    {"order_id": 0.13,"weight": 0.01,"region": 22,"delivery_hours": ["09:00-12:00", "16:00-21:30"]},
+    {"order_id": 9,"weight": -0.23,"region": 12,"delivery_hours": ["09:00-18:00"]},
+    {"order_id": 10,"weight": 0,"region": 1,"delivery_hours": ["09:00-18:00"]},
+    {"order_id": 11,"weight": 50.00001,"region": 22,"delivery_hours": ["09:00-12:00", "16:00-21:30"]},
+    {"order_id": 12,"weight": 300,"region": 12,"delivery_hours": ["09:00-18:00"]},
+    {"order_id": 13,"weight": 15,"region": -1,"delivery_hours": ["09:00-18:00"]},
+    {"order_id": 14,"weight": 15,"region": 22.0,"delivery_hours": ["09:00-18:00"]},
+    {"order_id": 15,"weight": 0.01,"region": 22,"delivery_hours": ["09-:00-12:00", "16:00-21:30"]},
+    {"order_id": 16,"weight": 0.01,"region": 22,"delivery_hours": ["09:00--12:00", "16:00-21:30"]},
+    {"order_id": 17,"weight": 0.01,"region": 22,"delivery_hours": [90, 13]},
+    {"order_id": 18,"weight": 0.01,"region": 22,"delivery_hours": "09:00-12:00"},
+    {"order_id": 19,"weight": 0.01,"region": 22,"delivery_hours": 50}
+  ]
+}
+
+> {%
+ client.test("Request executed successfully", function() {
+     client.assert(response.status === 400, "Response status is not 400");
+ });
+
+ client.test("Response content-type is json", function() {
+     var type = response.contentType.mimeType;
+     client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+ client.test("Request body is exist", function() {
+     client.assert(response.body.hasOwnProperty("validation_error"), "Cannot find 'validation_error' option in response")
+ });
+
+ client.test("Response is satisfied to the answer", function() {
+     var expectedID = [11.1, "12", 0.13, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+     var res = response.body['validation_error']['orders'];
+     client.assert(res.length === expectedID.length, "The size of given data do not equal to expected size")
+     for(var i = 0; i < res.length; i++) {
+       client.assert(res[i].id !== undefined, "Given data does not have property 'id'")
+       client.assert(res[i].id === expectedID[i], "The response data and expected result are not equal")
+     }
+ });
+%}
+
+###

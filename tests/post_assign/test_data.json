@@ -1,0 +1,8 @@
+{
+  "data": [
+    {"order_id": 101,"weight": 7.5,"region": 12,"delivery_hours": ["09:00-18:00"]},
+    {"order_id": 102,"weight": 1.42,"region": 12,"delivery_hours": ["09:00-15:00"]},
+    {"order_id": 103,"weight": 3.46,"region": 12,"delivery_hours": ["09:00-12:00", "16:00-21:30"]},
+    {"order_id": 104,"weight": 15,"region": 12,"delivery_hours": ["09:00-12:00", "16:00-21:30"]}
+  ]
+}

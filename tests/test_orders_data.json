@@ -1,0 +1,29 @@
+{
+  "data": [
+    {"order_id": 1,"weight": 0.01,"region": 1,"delivery_hours": ["09:00-18:00"]},
+    {"order_id": 2,"weight": 0.01,"region": 1,"delivery_hours": ["09:00-18:00"]},
+    {"order_id": 3,"weight": 0.01,"region": 1,"delivery_hours": ["09:00-18:00"]},
+
+    {"order_id": 6,"weight": 50,"region": 1,"delivery_hours": ["09:00-18:00"]},
+    {"order_id": 7,"weight": 50,"region": 1,"delivery_hours": ["09:00-18:00"]},
+
+    {"order_id": 8,"weight": 4,"region": 1,"delivery_hours": ["09:00-18:00"]},
+    {"order_id": 9,"weight": 4,"region": 1,"delivery_hours": ["09:00-18:00"]},
+    {"order_id": 10,"weight": 4,"region": 1,"delivery_hours": ["09:00-18:00"]},
+    {"order_id": 11,"weight": 4,"region": 1,"delivery_hours": ["09:00-18:00"]},
+    {"order_id": 12,"weight": 4,"region": 1,"delivery_hours": ["09:00-18:00"]},
+    {"order_id": 13,"weight": 4,"region": 1,"delivery_hours": ["09:00-18:00"]},
+    {"order_id": 14,"weight": 4,"region": 1,"delivery_hours": ["09:00-18:00"]},
+    {"order_id": 15,"weight": 3,"region": 10,"delivery_hours": ["09:00-18:00"]},
+    {"order_id": 16,"weight": 3,"region": 10,"delivery_hours": ["09:00-18:00"]},
+
+    {"order_id": 17,"weight": 3,"region": 1,"delivery_hours": ["22:00-23:00"]},
+    {"order_id": 18,"weight": 3,"region": 1,"delivery_hours": ["22:00-23:00"]},
+
+    {"order_id": 19,"weight": 0.01,"region": 1,"delivery_hours": ["03:00-04:00"]},
+    {"order_id": 20,"weight": 0.01,"region": 1,"delivery_hours": ["21:59-23:00"]},
+    {"order_id": 21,"weight": 0.01,"region": 1,"delivery_hours": ["00:00-01:00"]},
+
+    {"order_id": 22,"weight": 50,"region": 11,"delivery_hours": ["23:30-23:50"]}
+  ]
+}

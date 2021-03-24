@@ -1,12 +1,12 @@
 // Test data
-POST http://{{server}}:{{port}}/{{api}}
+POST http://{{server}}:{{port}}/{{couriers}}
 Content-Type: application/json
 
 < ./couriers.json
 
 ###
 // TEST 1: Change courier type
-PATCH http://{{server}}:{{port}}/{{api}}/1
+PATCH http://{{server}}:{{port}}/{{couriers}}/1
 Content-Type: application/json
 
 {
@@ -33,10 +33,16 @@ Content-Type: application/json
  client.test("Response is satisfied to the answer", function() {
      client.assert(response.body['courier_id'] === 1, "Obtained response does not satisfy the expected result")
      client.assert(response.body['courier_type'] === "bike", "Obtained response does not satisfy the expected result")
-     var regions = [1, 12, 22]
-     for
-     client.assert(response.body['regions'] == [1, 12, 22], "Obtained response does not satisfy the expected result")
-     client.assert(response.body['working_hours'] == ["11:35-14:05", "09:00-11:00"], "Obtained response does not satisfy the expected result")
+     var res = response.body['regions'];
+     var expected = [1, 12, 22];
+     for(var i = 0; i < res.length; i++) {
+       client.assert(res[i] === expected[i], "The response data and expected result are not equal")
+     }
+     res = response.body['working_hours'];
+     expected = ["11:35-14:05", "09:00-11:00"];
+     for(var i = 0; i < res.length; i++) {
+       client.assert(res[i] === expected[i], "The response data and expected result are not equal")
+     }
  });
 %}
 
@@ -45,7 +51,7 @@ Content-Type: application/json
 
 ###
 // TEST 2: Change regions
-PATCH http://{{server}}:{{port}}/{{api}}/2
+PATCH http://{{server}}:{{port}}/{{couriers}}/2
 Content-Type: application/json
 
 {
@@ -90,7 +96,7 @@ Content-Type: application/json
 
 ###
 // TEST 3: Change working hours
-PATCH http://{{server}}:{{port}}/{{api}}/3
+PATCH http://{{server}}:{{port}}/{{couriers}}/3
 Content-Type: application/json
 
 {
@@ -135,7 +141,7 @@ Content-Type: application/json
 
 ###
 // TEST 4: Change several parameters
-PATCH http://{{server}}:{{port}}/{{api}}/4
+PATCH http://{{server}}:{{port}}/{{couriers}}/4
 Content-Type: application/json
 
 {
@@ -144,7 +150,7 @@ Content-Type: application/json
 }
 
 ###
-PATCH http://{{server}}:{{port}}/{{api}}/4
+PATCH http://{{server}}:{{port}}/{{couriers}}/4
 Content-Type: application/json
 
 {
@@ -189,7 +195,7 @@ Content-Type: application/json
 
 ###
 // TEST 5: Missing data
-PATCH http://{{server}}:{{port}}/{{api}}/1
+PATCH http://{{server}}:{{port}}/{{couriers}}/1
 Content-Type: application/json
 
 {}
@@ -214,7 +220,7 @@ Content-Type: application/json
 
 ###
 // TEST 6: Prohibited data
-PATCH http://{{server}}:{{port}}/{{api}}/3
+PATCH http://{{server}}:{{port}}/{{couriers}}/3
 Content-Type: application/json
 
 {
@@ -241,7 +247,7 @@ Content-Type: application/json
 
 ###
 // TEST 7: Wrong data types
-PATCH http://{{server}}:{{port}}/{{api}}/2
+PATCH http://{{server}}:{{port}}/{{couriers}}/2
 Content-Type: application/json
 
 {
@@ -278,7 +284,7 @@ Content-Type: application/json
 
 ###
 // TEST 8: Wrong data types
-PATCH http://{{server}}:{{port}}/{{api}}/4
+PATCH http://{{server}}:{{port}}/{{couriers}}/4
 Content-Type: application/json
 
 {
@@ -315,7 +321,7 @@ Content-Type: application/json
 
 ###
 // TEST 9: Wrong data types
-PATCH http://{{server}}:{{port}}/{{api}}/2
+PATCH http://{{server}}:{{port}}/{{couriers}}/2
 Content-Type: application/json
 
 {
@@ -352,13 +358,13 @@ Content-Type: application/json
 
 ###
 // TEST 10: Check data after repeated POST-request
-POST http://{{server}}:{{port}}/{{api}}
+POST http://{{server}}:{{port}}/{{couriers}}
 Content-Type: application/json
 
 < ./couriers.json
 
 ###
-PATCH http://{{server}}:{{port}}/{{api}}/1
+PATCH http://{{server}}:{{port}}/{{couriers}}/1
 Content-Type: application/json
 
 {
@@ -367,13 +373,13 @@ Content-Type: application/json
 }
 
 ###
-POST http://{{server}}:{{port}}/{{api}}
+POST http://{{server}}:{{port}}/{{couriers}}
 Content-Type: application/json
 
 < ./couriers.json
 
 ###
-PATCH http://{{server}}:{{port}}/{{api}}/1
+PATCH http://{{server}}:{{port}}/{{couriers}}/1
 Content-Type: application/json
 
 {

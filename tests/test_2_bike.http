@@ -1,0 +1,405 @@
+// It is recommended to drop tables from database
+// before running this test.
+
+POST http://{{server}}:{{port}}/{{couriers}}
+Content-Type: application/json
+
+< ./test_couriers_data.json
+
+###
+POST http://{{server}}:{{port}}/{{orders}}
+Content-Type: application/json
+
+< ./test_orders_data.json
+
+###
+POST http://{{server}}:{{port}}/{{orders}}
+Content-Type: application/json
+
+{
+  "data": [
+    {"order_id": 4,"weight": 15,"region": 1,"delivery_hours": ["09:00-18:00"]},
+    {"order_id": 5,"weight": 15,"region": 1,"delivery_hours": ["09:00-18:00"]}
+  ]
+}
+
+
+
+###
+POST http://{{server}}:{{port}}/{{assign}}
+Content-Type: application/json
+
+{
+  "courier_id": 2
+}
+
+> {%
+ client.test("Request executed successfully", function() {
+     client.assert(response.status === 200, "Response status is not 200");
+ });
+
+ client.test("Response content-type is json", function() {
+     var type = response.contentType.mimeType;
+     client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+ client.test("Response body is exist", function() {
+     client.assert(response.body.hasOwnProperty("orders"), "Cannot find 'orders' option in response")
+     client.assert(response.body.hasOwnProperty("assign_time"), "Cannot find 'assign_time' option in response")
+ });
+
+ client.test("Response is satisfied to the answer", function() {
+     var expectedID = [1, 2, 3, 8, 9, 10]
+     var res = response.body["orders"];
+     client.assert(res.length === expectedID.length, "The size of given data do not equal to expected size")
+     for(var i = 0; i < res.length; i++) {
+       client.assert(res[i].id !== undefined, "Given data does not have property 'id'")
+       var found = false
+       for (var j = 0; j < expectedID.length; j++) {
+           if (res[i].id === expectedID[j]) {
+               found = true
+               break
+           }
+       }
+       client.assert(found, "The response data and expected result are not equal")
+     }
+ });
+%}
+
+###
+// Complete all assigned orders
+POST http://{{server}}:{{port}}/{{complete}}
+Content-Type: application/json
+
+{
+  "courier_id": 2,
+  "order_id": 1,
+  "complete_time": "2021-04-10T10:33:01.42Z"
+}
+
+###
+POST http://{{server}}:{{port}}/{{complete}}
+Content-Type: application/json
+
+{
+  "courier_id": 2,
+  "order_id": 2,
+  "complete_time": "2021-04-10T10:33:01.42Z"
+}
+
+###
+POST http://{{server}}:{{port}}/{{complete}}
+Content-Type: application/json
+
+{
+  "courier_id": 2,
+  "order_id": 3,
+  "complete_time": "2021-04-10T10:33:01.42Z"
+}
+
+###
+POST http://{{server}}:{{port}}/{{complete}}
+Content-Type: application/json
+
+{
+  "courier_id": 2,
+  "order_id": 8,
+  "complete_time": "2021-04-10T10:33:01.42Z"
+}
+
+###
+POST http://{{server}}:{{port}}/{{complete}}
+Content-Type: application/json
+
+{
+  "courier_id": 2,
+  "order_id": 9,
+  "complete_time": "2021-04-10T10:33:01.42Z"
+}
+
+###
+POST http://{{server}}:{{port}}/{{complete}}
+Content-Type: application/json
+
+{
+  "courier_id": 2,
+  "order_id": 10,
+  "complete_time": "2021-04-10T10:33:01.42Z"
+}
+
+
+
+###
+POST http://{{server}}:{{port}}/{{assign}}
+Content-Type: application/json
+
+{
+  "courier_id": 2
+}
+
+> {%
+ client.test("Request executed successfully", function() {
+     client.assert(response.status === 200, "Response status is not 200");
+ });
+
+ client.test("Response content-type is json", function() {
+     var type = response.contentType.mimeType;
+     client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+ client.test("Response body is exist", function() {
+     client.assert(response.body.hasOwnProperty("orders"), "Cannot find 'orders' option in response")
+     client.assert(response.body.hasOwnProperty("assign_time"), "Cannot find 'assign_time' option in response")
+ });
+
+ client.test("Response is satisfied to the answer", function() {
+     var expectedID = [11, 12, 13]
+     var res = response.body["orders"];
+     client.assert(res.length === expectedID.length, "The size of given data does not equal to expected size")
+     for(var i = 0; i < res.length; i++) {
+       client.assert(res[i].id !== undefined, "Given data does not have property 'id'")
+       var found = false
+       for (var j = 0; j < expectedID.length; j++) {
+           if (res[i].id === expectedID[j]) {
+               found = true
+               break
+           }
+       }
+       client.assert(found, "The response data and expected result are not equal")
+     }
+ });
+%}
+
+###
+POST http://{{server}}:{{port}}/{{complete}}
+Content-Type: application/json
+
+{
+  "courier_id": 2,
+  "order_id": 11,
+  "complete_time": "2021-04-10T10:33:01.42Z"
+}
+
+###
+POST http://{{server}}:{{port}}/{{complete}}
+Content-Type: application/json
+
+{
+  "courier_id": 2,
+  "order_id": 12,
+  "complete_time": "2021-04-10T10:33:01.42Z"
+}
+
+###
+POST http://{{server}}:{{port}}/{{complete}}
+Content-Type: application/json
+
+{
+  "courier_id": 2,
+  "order_id": 13,
+  "complete_time": "2021-04-10T10:33:01.42Z"
+}
+
+
+
+###
+POST http://{{server}}:{{port}}/{{assign}}
+Content-Type: application/json
+
+{
+  "courier_id": 2
+}
+
+> {%
+ client.test("Request executed successfully", function() {
+     client.assert(response.status === 200, "Response status is not 200");
+ });
+
+ client.test("Response content-type is json", function() {
+     var type = response.contentType.mimeType;
+     client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+ client.test("Response body is exist", function() {
+     client.assert(response.body.hasOwnProperty("orders"), "Cannot find 'orders' option in response")
+     client.assert(response.body.hasOwnProperty("assign_time"), "Cannot find 'assign_time' option in response")
+ });
+
+ client.test("Response is satisfied to the answer", function() {
+     client.assert(response.body["orders"].length === 1, "The size of given data does not equal to expected size")
+     client.assert(response.body["orders"][0].id === 14, "The response data and expected result are not equal")
+ });
+%}
+
+###
+POST http://{{server}}:{{port}}/{{complete}}
+Content-Type: application/json
+
+{
+  "courier_id": 2,
+  "order_id": 14,
+  "complete_time": "2021-04-10T10:33:01.42Z"
+}
+
+
+
+###
+POST http://{{server}}:{{port}}/{{assign}}
+Content-Type: application/json
+
+{
+  "courier_id": 2
+}
+
+> {%
+ client.test("Request executed successfully", function() {
+     client.assert(response.status === 200, "Response status is not 200");
+ });
+
+ client.test("Response content-type is json", function() {
+     var type = response.contentType.mimeType;
+     client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+ client.test("Response body is exist", function() {
+     client.assert(response.body.hasOwnProperty("orders"), "Cannot find 'orders' option in response")
+     client.assert(response.body.hasOwnProperty("assign_time"), "Cannot find 'assign_time' option in response")
+ });
+
+ client.test("Response is satisfied to the answer", function() {
+     client.assert(response.body["orders"].length === 1, "The size of given data does not equal to expected size")
+     client.assert(response.body["orders"][0].id === 4, "The response data and expected result are not equal")
+ });
+%}
+
+###
+POST http://{{server}}:{{port}}/{{complete}}
+Content-Type: application/json
+
+{
+  "courier_id": 2,
+  "order_id": 4,
+  "complete_time": "2021-04-10T10:33:01.42Z"
+}
+
+
+
+###
+POST http://{{server}}:{{port}}/{{assign}}
+Content-Type: application/json
+
+{
+  "courier_id": 2
+}
+
+> {%
+ client.test("Request executed successfully", function() {
+     client.assert(response.status === 200, "Response status is not 200");
+ });
+
+ client.test("Response content-type is json", function() {
+     var type = response.contentType.mimeType;
+     client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+ client.test("Response body is exist", function() {
+     client.assert(response.body.hasOwnProperty("orders"), "Cannot find 'orders' option in response")
+     client.assert(response.body.hasOwnProperty("assign_time"), "Cannot find 'assign_time' option in response")
+ });
+
+ client.test("Response is satisfied to the answer", function() {
+     client.assert(response.body["orders"].length === 1, "The size of given data does not equal to expected size")
+     client.assert(response.body["orders"][0].id === 5, "The response data and expected result are not equal")
+ });
+%}
+
+###
+POST http://{{server}}:{{port}}/{{complete}}
+Content-Type: application/json
+
+{
+  "courier_id": 2,
+  "order_id": 5,
+  "complete_time": "2021-04-10T10:33:01.42Z"
+}
+
+
+
+###
+POST http://{{server}}:{{port}}/{{assign}}
+Content-Type: application/json
+
+{
+  "courier_id": 2
+}
+
+> {%
+ client.test("Request executed successfully", function() {
+     client.assert(response.status === 200, "Response status is not 200");
+ });
+
+ client.test("Response content-type is json", function() {
+     var type = response.contentType.mimeType;
+     client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+ client.test("Response body is exist", function() {
+     client.assert(response.body.hasOwnProperty("orders"), "Cannot find 'orders' option in response")
+ });
+
+ client.test("Response is satisfied to the answer", function() {
+     client.assert(response.body["orders"].length === 0, "The size of given data does not equal to expected size")
+ });
+%}
+
+
+
+
+
+###
+// Test of get request
+GET http://{{server}}:{{port}}/{{couriers}}/2
+
+> {%
+ client.test("Request executed successfully", function() {
+     client.assert(response.status === 200, "Response status is not 200");
+ });
+
+ client.test("Response content-type is json", function() {
+     var type = response.contentType.mimeType;
+     client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+ client.test("Response body is exist", function() {
+     client.assert(response.body.hasOwnProperty("courier_id"), "Cannot find 'courier_id' option in response")
+     client.assert(response.body.hasOwnProperty("courier_type"), "Cannot find 'courier_type' option in response")
+     client.assert(response.body.hasOwnProperty("regions"), "Cannot find 'regions' option in response")
+     client.assert(response.body.hasOwnProperty("working_hours"), "Cannot find 'working_hours' option in response")
+     client.assert(response.body.hasOwnProperty("rating"), "Cannot find 'rating' option in response")
+     client.assert(response.body.hasOwnProperty("earnings"), "Cannot find 'earnings' option in response")
+ });
+
+ client.test("Response is satisfied to the answer", function() {
+     client.assert(response.body["courier_id"] === 2, "Field 'courier_id' does not satisfy the expected result")
+     client.assert(response.body["courier_type"] === "bike", "Field 'courier_type' does not satisfy the expected result")
+     var expected = [1, 2, 3, 4, 5]
+     var regions = response.body["regions"]
+     client.assert(regions.length === expected.length, "The size of 'regions' does not equal to expected size")
+     for(var i = 0; i < regions.length; i++) {
+       var found = false
+       for (var j = 0; j < expected.length; j++) {
+           if (regions[i] === expected[j]) {
+               found = true
+               break
+           }
+       }
+       client.assert(found, "Field 'regions' does not satisfy the expected result")
+     }
+     client.assert(response.body["working_hours"].length === 1, "Field 'working_hours' does not have the expected size")
+     client.assert(response.body["working_hours"][0] === "04:00-21:59", "Field 'working_hours' does not satisfy the expected result")
+     client.assert(response.body["earnings"] === 30000, "Field 'earnings' does not satisfy the expected result")
+     //client.assert(response.body["rating"] === 5, "Field 'rating' does not satisfy the expected result")
+ });
+%}
+
+###
