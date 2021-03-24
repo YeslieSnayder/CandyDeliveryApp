@@ -1,10 +1,10 @@
-from model.db.db import DB
+from model.db.sqlite_db import SQLiteDB
 from model.objects import *
 
 
 class Model:
     def __init__(self):
-        self.db = DB()
+        self.db = SQLiteDB()
 
     def create_couriers(self, couriers_json_list):
         wrong_ids = []

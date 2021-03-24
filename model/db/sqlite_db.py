@@ -3,15 +3,17 @@ import sqlite3
 
 from model.db.config import *
 from model.objects import *
+from model.db.db_interface import DB
 
 
-class DB:
+class SQLiteDB(DB):
     def __init__(self):
         """
         Initialization of the database.
         Important point: All non-standard data types such as list and dict
         are stored in database with type TEXT, later they will be parsed by json.
         """
+        super().__init__()
         try:
             with sqlite3.connect(DATABASE_NAME) as con:
                 cursor = con.cursor()
