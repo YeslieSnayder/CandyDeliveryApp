@@ -115,7 +115,7 @@ class Model:
         load_sum = 0
         courier.current_order_ids = []
         for order in orders:
-            if load_sum >= payload:
+            if load_sum + order.weight > payload:
                 break
             courier.current_order_ids.append(order.order_id)
             order.update({
@@ -178,7 +178,7 @@ def can_deliver_on_time(delivery_time: list, working_hours: list):
         for work_time in working_hours:
             work_start = datetime.strptime(work_time[:5], '%H:%M')
             work_end = datetime.strptime(work_time[6:], '%H:%M')
-            if delivery_start <= work_start < delivery_end or delivery_start < work_end <= delivery_end:
+            if work_start < delivery_end and delivery_start < work_end:
                 return True
     return False
 

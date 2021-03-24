@@ -138,6 +138,12 @@ class Courier:
                     return True
                 if not re.search(r'\d{2}:\d{2}-\d{2}:\d{2}', hours):
                     return True
+        if 'regions' in data:
+            for region in data['regions']:
+                if type(region) != int:
+                    return True
+                if region <= 0:
+                    return True
         return False
 
 
@@ -236,14 +242,23 @@ class Order:
 
     @staticmethod
     def is_incorrect_data_object(data):
-        return len(data) == 0 or \
-            'order_id' not in data or type(data['order_id']) != int or \
-            'weight' not in data or (type(data['weight']) != float and type(data['weight']) != int) or \
-            'region' not in data or type(data['region']) != int or \
-            'delivery_hours' not in data or type(data['delivery_hours']) != list or \
-            data['order_id'] < 1 or \
-            data['region'] < 1 or \
-            data['weight'] < 0.01 or data['weight'] > 50
+        if len(data) == 0 or \
+                'order_id' not in data or type(data['order_id']) != int or \
+                'weight' not in data or (type(data['weight']) != float and type(data['weight']) != int) or \
+                'region' not in data or type(data['region']) != int or \
+                'delivery_hours' not in data or type(data['delivery_hours']) != list or \
+                data['order_id'] < 1 or \
+                data['region'] < 1 or \
+                data['weight'] < 0.01 or data['weight'] > 50 or \
+                len(data['delivery_hours']) == 0:
+            return True
+        if 'delivery_hours' in data:
+            for hours in data['delivery_hours']:
+                if type(hours) != str or len(hours) != 11:
+                    return True
+                if not re.search(r'\d{2}:\d{2}-\d{2}:\d{2}', hours):
+                    return True
+        return False
 
 
 def get_time_from_str(str_time):

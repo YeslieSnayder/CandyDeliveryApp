@@ -10,14 +10,6 @@ app = Flask(__name__)
 model = Model()
 
 
-# TODO: Remove after debug
-@app.route('/data', methods=['GET'])
-def get_data():
-    print(model.get_couriers())
-    print(model.get_orders())
-    return make_response(jsonify({"couriers": model.get_couriers(), "orders": model.get_orders()}))
-
-
 @app.route('/couriers', methods=['POST'])
 def post_couriers():
     try:
