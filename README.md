@@ -1,6 +1,22 @@
-# Yandex-project README
-
 # Table of content
+
+- [Table of content](#table-of-content)
+- [Description](#description)
+   - [Database](#database)
+      - [Diagram](#diagram)
+      - [Couriers](#couriers)
+      - [Orders](#orders)
+   - [Handlers](#handlers)
+      - [POST /couriers](#post-couriers)
+      - [PATCH /couriers/$courier_id](#patch-courierscourier_id)
+      - [POST /orders](#post-orders)
+      - [POST /orders/assign](#post-ordersassign)
+      - [POST /orders/complete](#post-orderscomplete)
+      - [GET /couriers/$courier_id](#get-courierscourier_id)
+   - [Tests](#tests)
+   - [Libraries](#libraries)
+- [Installation](#installation)
+- [Troubleshooting](#troubleshooting)
 
 # Description
 
