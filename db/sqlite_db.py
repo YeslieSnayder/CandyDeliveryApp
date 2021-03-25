@@ -1,7 +1,7 @@
 import json
 import sqlite3
 
-from db.config import *
+from db.__init__ import *
 from model.objects import *
 from db.db_interface import DB
 

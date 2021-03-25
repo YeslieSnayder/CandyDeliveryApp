@@ -6,8 +6,10 @@
  then you should add or remove constants in this file,
  only then change the structure of database in db-controller file
 """
+import os
 
-DATABASE_NAME = '/home/yesliesnayder/projects/pycharmProjects/CandyDeliveryApp/db/database.db'
+
+DATABASE_NAME = os.path.join(os.getcwd(), 'db', 'database.db')
 
 # Information about courier
 COURIER_TABLE = 'couriers'
