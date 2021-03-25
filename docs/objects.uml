@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>Python</ID>
+  <OriginalElement>#/home/yesliesnayder/projects/pycharmProjects/CandyDeliveryApp/application/model/objects.py</OriginalElement>
+  <nodes>
+    <node x="0.0" y="0.0">application.model.objects.Courier</node>
+    <node x="407.0" y="0.0">application.model.objects.Order</node>
+  </nodes>
+  <notes />
+  <edges />
+  <settings layout="Hierarchic Group" zoom="1.0" x="374.5" y="194.0" />
+  <SelectedNodes>
+    <node>application.model.objects.Courier</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Methods</Category>
+    <Category>Inner Classes</Category>
+    <Category>Fields</Category>
+  </Categories>
+</Diagram>
+
