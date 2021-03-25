@@ -1,5 +1,5 @@
 from flask import Flask
-from model.model import Model
+from application.model.model import *
 
 HOST = '0.0.0.0'
 PORT = 8080

@@ -1,4 +1,4 @@
-from model.objects import *
+from application.model.objects import *
 
 
 class DB:

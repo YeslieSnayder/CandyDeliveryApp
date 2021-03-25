@@ -1,6 +1,6 @@
-from api.__init__ import app, model
-from api.handlers.validator import *
-from view.view import View
+from application.api import app, model
+from application.api.handlers.validator import *
+from application.view.view import View
 
 
 @app.route('/couriers/<int:courier_id>', methods=['GET'])

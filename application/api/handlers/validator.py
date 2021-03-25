@@ -1,7 +1,7 @@
 import re
 
 from flask import request
-from model.exeptions import *
+from application.model.exeptions import *
 
 
 def validate_and_return_json():

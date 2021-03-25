@@ -8,8 +8,10 @@
 """
 import os
 
-
-DATABASE_NAME = os.path.join(os.getcwd(), 'db', 'database.db')
+if os.getcwd()[os.getcwd().rfind(os.sep):] == '/api':
+    DATABASE_NAME = os.path.join(os.getcwd()[:os.getcwd().rfind(os.sep)], 'db', 'database.db')
+else:
+    DATABASE_NAME = os.path.join(os.getcwd(), 'application', 'db', 'database.db')
 
 # Information about courier
 COURIER_TABLE = 'couriers'

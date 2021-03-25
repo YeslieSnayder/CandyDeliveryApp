@@ -1,7 +1,7 @@
 from datetime import datetime
 import re
 
-from model.exeptions import *
+from application.model.exeptions import *
 
 
 class Courier:

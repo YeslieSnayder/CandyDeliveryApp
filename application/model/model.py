@@ -1,5 +1,5 @@
-from db.sqlite_db import SQLiteDB
-from model.objects import *
+from application.db.sqlite_db import SQLiteDB
+from application.model.objects import *
 
 
 class Model:
