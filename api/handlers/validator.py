@@ -4,7 +4,7 @@ from flask import request
 from model.exeptions import *
 
 
-async def validate_and_return_json():
+def validate_and_return_json():
     """
     The method checks the correctness of the entered data.
     Request should be json-type (Content-Type: application/json) and contains at least 1 field.
