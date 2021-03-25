@@ -1,3 +1,8 @@
+"""
+Launching REST API service on the machine.
+"""
+
+
 from application.api.__init__ import *
 from application.api.handlers.post_couriers import *
 from application.api.handlers.patch_courier import *

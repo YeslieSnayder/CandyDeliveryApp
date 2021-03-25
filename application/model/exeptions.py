@@ -1,3 +1,9 @@
+"""
+All necessary exceptions used in the project
+for detection of the problems which arise during the process.
+"""
+
+
 class WrongCourierData(Exception):
     pass
 

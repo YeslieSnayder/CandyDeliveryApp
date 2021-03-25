@@ -1,3 +1,8 @@
+"""
+Initialization of the REST API service.
+"""
+
+
 from flask import Flask
 from application.model.model import *
 

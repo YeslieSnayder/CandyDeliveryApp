@@ -3,6 +3,11 @@ from application.model.objects import *
 
 
 class Model:
+    """
+    The main class for work with data from request.
+    It validates the data and makes changes of the database.
+    """
+
     def __init__(self):
         self.db = SQLiteDB()
 

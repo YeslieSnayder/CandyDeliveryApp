@@ -7,6 +7,10 @@ from application.db.db_interface import DB
 
 
 class SQLiteDB(DB):
+    """
+    Implementation of DB interface with using SQLite database.
+    """
+
     def __init__(self):
         """
         Initialization of the database.

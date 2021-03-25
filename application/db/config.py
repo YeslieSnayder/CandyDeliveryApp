@@ -6,6 +6,8 @@
  then you should add or remove constants in this file,
  only then change the structure of database in db-controller file
 """
+
+
 import os
 
 if os.getcwd()[os.getcwd().rfind(os.sep):] == '/api':

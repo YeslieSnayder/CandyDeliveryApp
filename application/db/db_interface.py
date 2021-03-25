@@ -1,3 +1,10 @@
+"""
+Abstract interface for the database.
+There are description of the each method that should
+contain class of the database.
+Also, it is needed for the future updates or replacement of the database.
+"""
+
 from application.model.objects import *
 
 
