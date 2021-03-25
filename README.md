@@ -20,7 +20,7 @@
 
 # Description
 
-This is an implementation of the REST API service of the internet market **'CandyDeliveryShop'**. It can hire couriers, take orders, and favorable distribute orders between couriers.
+This is an implementation of the REST API service for the internet market **'CandyDeliveryShop'**. It can hire couriers, take orders, and favorable distribute orders between couriers.
 
 It uses **Flask** and **SQLite**.
 
