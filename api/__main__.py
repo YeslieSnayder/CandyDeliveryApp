@@ -19,7 +19,7 @@ def post_couriers():
     :return: The result of operation (code 201 or 400).
     """
     try:
-        json = check_and_return_json()
+        json = validate_and_return_json()
         if "data" not in json:
             return View.send_incorrect_json_bad_request()
 
@@ -41,7 +41,7 @@ def patch_courier(courier_id):
     :return: The result of operation (code 200, 400, or 404).
     """
     try:
-        json = check_and_return_json()
+        json = validate_and_return_json()
         info = model.patch_courier(courier_id, json)
         return View.send_courier_info(info)
     except WrongCourierData as e:
@@ -59,7 +59,7 @@ def post_orders():
     :return: The result of the operation (code 201 or 400).
     """
     try:
-        json = check_and_return_json()
+        json = validate_and_return_json()
         if "data" not in json:
             return View.send_incorrect_json_bad_request()
 
@@ -81,7 +81,7 @@ def post_orders_assign():
     with order IDs corresponding to the courier data.
     """
     try:
-        json = check_and_return_json()
+        json = validate_and_return_json()
         if "courier_id" not in json:
             return View.send_error_missing_id("No parameter \"courier_id\"", "order")
 
@@ -102,7 +102,7 @@ def post_orders_complete():
     :return: The result of the operation (code 200 or 400).
     """
     try:
-        json = check_and_return_json()
+        json = validate_and_return_json()
         if ("courier_id" or "order_id" or "complete_time") not in json:
             return View.send_incorrect_json_bad_request()
 
@@ -134,7 +134,7 @@ def get_courier(courier_id):
         return View.send_couriers_bad_request(e.args[0], code=404)
 
 
-def check_and_return_json():
+def validate_and_return_json():
     """
     The method checks the correctness of the entered data.
     Request should be json-type (Content-Type: application/json) and contains at least 1 field.
