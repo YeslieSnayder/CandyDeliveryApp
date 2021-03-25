@@ -156,7 +156,7 @@ class Order:
     delivery_hours ->  the list of delivery time of the order {HH:MM-HH:MM}
     Additional information:
     type ->            type of order process: TypeOrder {READY, PROCESSING, COMPLETE}
-    courier_id ->      identifier of courier who toke the order: integer >= 1, if 0 => no courier
+    courier_id ->      identifier of courier who toke the order: integer >= 1
     lead_time ->       time spent on that order: long int
     complete_time ->   time when the order was completed: str {1985-04-12T23:20:50.52Z}
     coefficient ->     coefficient of courier's type
