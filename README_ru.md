@@ -450,7 +450,11 @@ GET /couriers/2
 
 Перед запуском тестов, рекомендуемо сделать backup базы данных, и после этого удалить таблицы: `couriers` and `orders`.
 
-Для того, чтобы запустить тесты, необходимо запустить REST API сервис и после этого запустить файлы тестов один за другим.
+Для того, чтобы запустить тесты, необходимо запустить REST API сервис и после этого запустить файлы тестов один за другим в
+PyCharm нажав на кнопку `Run all requests in file`.
+
+Для того, чтобы тесты прошли успешно, необходимо удалять таблицы базы данных `couriers` и `rooms` после каждого тестового файла.
+
 
 ## Используемые библиотеки
 
@@ -477,6 +481,32 @@ GET /couriers/2
 4. Установите зависимости: `pip install -r requirements.txt`
 5. Запуск приложения: `python3 application/api` 
    или если у вас установлен pypy: `pypy3 application/api`
+
+## Добавить автоматический запуск сервиса
+
+1. Измените файл `auto_run.service` заменив `PATH_TO_DIRECTORY` на директорию к проекту:
+   ```
+   [Unit]
+   Description=Candy delivery application
+   After=multi-user.target
+
+   [Service]
+   Type=simple
+   WorkingDirectory=PATH_TO_DIRECTORY
+   ExecStart=/usr/local/bin/pipenv run python PATH_TO_DIRECTORY/application/api
+
+   [Install]
+   WantedBy=multi-user.target
+   ```
+
+2. Создайте файл `/lib/systemd/system/candy_delivery_app.service` и скопируйте содержимое `auto_run.service`:
+   ```
+   sudo touch /lib/systemd/system/candy_delivery_app.service
+   sudo cp ./auto_run.service /lib/systemd/system/candy_delivery_app.service
+   ```
+   
+3. Обновите конфигурацию системы systemd: `systemctl daemon-reload`
+4. Подключите : `systemctl enable candy_delivery_app.service`
 
 # Сообщить о проблеме
 

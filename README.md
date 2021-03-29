@@ -16,6 +16,7 @@
    - [Tests](#tests)
    - [Libraries](#libraries)
 - [Installation](#installation)
+  - [Auto run](#auto-run)
 - [Troubleshooting](#troubleshooting)
 
 # Description
@@ -438,7 +439,10 @@ The program has tests of functionality.
 
 They are located in the [tests](https://github.com/YeslieSnayder/CandyDeliveryApp/tree/master/tests) directory. Before testing, it is **recommended** to make a backup of the database, and after it, drop the tables: `couriers` and `orders`.
 
-To run the test you should launch the REST API service and launch test files one by one.
+To run the test you should launch the REST API service and launch test files one by one in PyCharm 
+by pressing the button `Run all requests in file`.
+
+To be sure in correctness of tests, please drop the tables `couriers` and `rooms` after each test file.
 
 ## Libraries
 
@@ -460,6 +464,32 @@ Required **Python** version: `3.8` and above.
 3. Open the directory: `cd CandyDeliveryApp/`
 4. Install requirements: `pip install -r requirements.txt`
 5. Launch the app: `python3 application/api` or if you install PyPy, then `pypy3 application/api`
+
+## Auto run
+
+1. Change the file `auto_run.service` by changing `PATH_TO_DIRECTORY`:
+   ```
+   [Unit]
+   Description=Candy delivery application
+   After=multi-user.target
+
+   [Service]
+   Type=simple
+   WorkingDirectory=PATH_TO_DIRECTORY
+   ExecStart=/usr/local/bin/pipenv run python PATH_TO_DIRECTORY/application/api
+
+   [Install]
+   WantedBy=multi-user.target
+   ```
+
+2. Create a file `/lib/systemd/system/candy_delivery_app.service` and copy contents of `auto_run.service` to created file:
+   ```
+   sudo touch /lib/systemd/system/candy_delivery_app.service
+   sudo cp ./auto_run.service /lib/systemd/system/candy_delivery_app.service
+   ```
+   
+3. Reload system configuration systemd: `systemctl daemon-reload`
+4. Turn on auto run of the application: `systemctl enable candy_delivery_app.service`
 
 # Troubleshooting
 
