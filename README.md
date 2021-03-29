@@ -459,8 +459,16 @@ Required **Python** version: `3.8` and above.
 
 1. Clone repo: `git clone https://github.com/YeslieSnayder/CandyDeliveryApp.git`
 2. Append the project's path to `PYTHONPATH`:
-   If you are using Ubuntu: `export PYTHONPATH="${PYTHONPATH}:~/CandyDeliveryApp/"`
-   If you are using Windows (Please, before running this command exchange the path `C:\path\to\the\project` to the current directory where project is located): `set PYTHONPATH=%PYTHONPATH%:C:\path\to\the\project\CandyDeliveryApp`.
+   
+If you are using **Ubuntu**: 
+```
+export PYTHONPATH="${PYTHONPATH}:~/CandyDeliveryApp/"
+```
+   
+If you are using **Windows** (Please, before running this command exchange the path `C:\path\to\the\project` to the current directory where project is located): 
+```
+set PYTHONPATH=%PYTHONPATH%:C:\path\to\the\project\CandyDeliveryApp
+```
 3. Open the directory: `cd CandyDeliveryApp/`
 4. Install requirements: `pip install -r requirements.txt`
 5. Launch the app: `python3 application/api` or if you install PyPy, then `pypy3 application/api`
