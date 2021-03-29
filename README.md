@@ -16,8 +16,10 @@
    - [Tests](#tests)
    - [Libraries](#libraries)
 - [Installation](#installation)
-  - [Auto run](#auto-run)
+   - [Autorun](#autorun)
 - [Troubleshooting](#troubleshooting)
+   - [Autorun isn't working](#autorun-isnt-working)
+   - [Contacts](#contacts)
 
 # Description
 
@@ -473,7 +475,7 @@ set PYTHONPATH=%PYTHONPATH%:C:\path\to\the\project\CandyDeliveryApp
 4. Install requirements: `pip install -r requirements.txt`
 5. Launch the app: `python3 application/api` or if you install PyPy, then `pypy3 application/api`
 
-## Auto run
+## Autorun
 
 1. Change the file `auto_run.service` by changing `PATH_TO_DIRECTORY`:
    ```
@@ -501,4 +503,14 @@ set PYTHONPATH=%PYTHONPATH%:C:\path\to\the\project\CandyDeliveryApp
 
 # Troubleshooting
 
-If you have any problems and want to report that, please contact me by email: kuzmickiy2000@mail.ru
+### Autorun isn't working
+
+Try to use another python interpreter, for example, `PyPy`.
+
+Change the string in the configuration file: `ExecStart=/usr/local/bin/pipenv run python3 PATH_TO_DIRECTORY/application/api`
+to the `ExecStart=/usr/local/bin/pipenv run pypy3 PATH_TO_DIRECTORY/application/api` with exchanging *PATH_TO_DIRECTORY*.
+
+### Contacts
+
+If you have any problems or suggestions, and want to report that, please contact me 
+by email: kuzmickiy2000@mail.ru
