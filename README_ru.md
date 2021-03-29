@@ -475,8 +475,17 @@ PyCharm нажав на кнопку `Run all requests in file`.
 
 1. Клонировать репозиторий: `git clone https://github.com/YeslieSnayder/CandyDeliveryApp.git`
 2. Добавить путь к проекту `PYTHONPATH`:
-   Если вы используете Ubuntu: `export PYTHONPATH="${PYTHONPATH}:~/CandyDeliveryApp/"`
-   Если вы используете Windows (Пожалуйства, проверьте путь перед запуском следующей команды. Путь `C:\path\to\the\project` должен быть заменен на путь до директории с проектом `CandyDeliveryShop`): `set PYTHONPATH=%PYTHONPATH%:C:\path\to\the\project\CandyDeliveryApp`.
+   
+Если вы используете Ubuntu: 
+```
+export PYTHONPATH="${PYTHONPATH}:~/CandyDeliveryApp/"
+```
+   
+Если вы используете Windows (Пожалуйства, проверьте путь перед запуском следующей команды. Путь `C:\path\to\the\project` должен быть заменен на путь до директории с проектом `CandyDeliveryShop`): 
+```
+set PYTHONPATH=%PYTHONPATH%:C:\path\to\the\project\CandyDeliveryApp
+```
+
 3. Войдите в директорию: `cd CandyDeliveryApp/`
 4. Установите зависимости: `pip install -r requirements.txt`
 5. Запуск приложения: `python3 application/api` 
