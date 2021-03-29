@@ -476,7 +476,7 @@ Required **Python** version: `3.8` and above.
    [Service]
    Type=simple
    WorkingDirectory=PATH_TO_DIRECTORY
-   ExecStart=/usr/local/bin/pipenv run python PATH_TO_DIRECTORY/application/api
+   ExecStart=/usr/local/bin/pipenv run python3 PATH_TO_DIRECTORY/application/api
 
    [Install]
    WantedBy=multi-user.target
